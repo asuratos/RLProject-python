@@ -2,3 +2,4 @@
 .vscode/
 RLProject.code-workspace
 tcod_tutorial/__pycache__/
+tcod_tutorial/map_objects/__pycache__/
