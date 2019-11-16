@@ -4,3 +4,4 @@ RLProject.code-workspace
 tcod_tutorial/__pycache__/
 tcod_tutorial/map_objects/__pycache__/
 tcod_tutorial/components/__pycache__/
+tests/__pycache__/
