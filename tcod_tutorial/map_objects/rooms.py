@@ -1,16 +1,22 @@
 import numpy as np
 
 class Room:
-    def __init__(self):
+    def __init__(self, hallwaychance = 0.5):
         self.spaces = np.array([[0,0]])
         self.boundary = np.array([]) 
 
+        self.hallwaychance = hallwaychance
         self.halllength = 0
-        self.hallwaychance = 0.5
+
+        self.transforms = [self.rotate_left,
+                           self.rotate_right,
+                           self.mirror_horizontal,        
+                           self.mirror_vertical]
 
     def add_hallway(self, maxlen = 5):
+
         for _ in range(maxlen):
-            if np.random.rand() > 0.5:
+            if np.random.rand() > self.hallwaychance:
                 self.halllength += 1
                 np.append(self.spaces, [[0,self.halllength]], axis = 0)
             else:
@@ -40,8 +46,8 @@ class Room:
     
 
 class RoomRect(Room):
-    def __init__(self, w, h):
-        super().__init__()
+    def __init__(self, w, h, hallwaychance = 0.5):
+        super().__init__(hallwaychance)
         self.w = w
         self.h = h
 
