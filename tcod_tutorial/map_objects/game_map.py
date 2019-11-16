@@ -102,7 +102,7 @@ class GameMap:
         number_of_monsters = randint(0, max_monsters_per_room)
         number_of_items = randint(0, max_items_per_room)
 
-        for i in range(number_of_monsters):
+        for _ in range(number_of_monsters):
             # Choose a random location in the room
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
@@ -123,7 +123,7 @@ class GameMap:
 
                 entities.append(monster)
         
-        for i in range(number_of_items):
+        for _ in range(number_of_items):
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
 
