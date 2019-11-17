@@ -1,7 +1,7 @@
 import numpy as np
 
-from map_objects.tile import Tile
-from map_objects.rooms import Room, RoomRect
+from tile import Tile
+from rooms import Room, RoomRect
 
 class Map:
     def __init__(self, width, height):
@@ -15,7 +15,7 @@ class Map:
         strlist = [''] * self.height
         for x in range(self.width):
             for y in range(self.height):
-                if [x,y] in self.dugout:
+                if np.any((self.dugout == [x, y]).all(1)):
                     strlist[x] += '.'
                 else:
                     strlist[x] += '#'
@@ -30,27 +30,29 @@ class Map:
     
     def clear_check(self, space1, space2):
         for pt in space1:
-            if pt in space2:
+            if np.any((space2[:] == pt).all(1)):
                 return False
         
         return True
 
     def get_neighbors(self, point):
-        return [point + [1,0], point + [0,1],
-                point + [-1,0], point + [0,-1]]
+        return point + np.array([[1,0],
+                                 [-1,0],
+                                 [0,1],
+                                 [0,-1]])
 
     def get_bounds(self, space):
-        bounds = np.array([])
+        bounds = []
         for point in space:
             for neighbor in self.get_neighbors(point):
-                if neighbor not in space and neighbor not in bounds:
-                    np.append(bounds, neighbor, axis = 0)
+                if not np.any((space[:] == neighbor).all(1)):
+                    bounds.append(neighbor)
 
-        return bounds
+        return np.array(bounds)
 
     def attach_room(self, room, pt, tries = 4):
         for _ in range(tries):
-            if self.clear_check(room.space + pt, self.dugout):
+            if self.clear_check(room.spaces + pt, self.dugout):
                 return True
             else:
                 room.transforms[np.random.randint(len(room.transforms))]()
@@ -75,10 +77,17 @@ class Map:
             newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10))
             
             # find place for newroom
-            for attach_pt in self.get_bounds(self.dugout):
+            candidate_pts = self.get_bounds(self.dugout)
+            for attach_pt in candidate_pts:
                 if self.attach_room(newroom, attach_pt):
-                    np.append(self.dugout, newroom.spaces + attach_pt)
+                    self.dugout = np.append(self.dugout, 
+                                            newroom.spaces + attach_pt,
+                                            axis = 0)
+                    break
+
+        print('finish')
 
 if __name__ == '__main__':
     a = Map(50,50)
-    a.make_map(25)
+    a.make_map(1)
+    print(a)
