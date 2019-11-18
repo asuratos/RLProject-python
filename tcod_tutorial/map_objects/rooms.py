@@ -18,7 +18,7 @@ class Room:
         for _ in range(maxlen):
             if np.random.rand() > self.hallwaychance:
                 self.halllength += 1
-                np.append(self.spaces, [[0,self.halllength]], axis = 0)
+                self.spaces = np.append(self.spaces, [[0,self.halllength]], axis = 0)
             else:
                 break
 
@@ -40,7 +40,7 @@ class Room:
 
     def collission_check(self,other):
         for pt in self.spaces:
-            if pt in other.spaces:
+            if (other.spaces[:] == pt).all(1).any():
                 return True
         return False
     
