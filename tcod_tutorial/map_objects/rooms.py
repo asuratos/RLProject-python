@@ -16,7 +16,7 @@ class Room:
     def add_hallway(self, maxlen = 5):
 
         for _ in range(maxlen):
-            if np.random.rand() > self.hallwaychance:
+            if np.random.rand() < self.hallwaychance:
                 self.halllength += 1
                 self.spaces = np.append(self.spaces, [[0,self.halllength]], axis = 0)
             else:
@@ -51,7 +51,7 @@ class RoomRect(Room):
         self.w = w
         self.h = h
 
-        if np.random.rand() > self.hallwaychance:
+        if np.random.rand() < self.hallwaychance:
             self.add_hallway()
         
         # make a rectangle
