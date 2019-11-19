@@ -1,7 +1,7 @@
 import numpy as np
 
-from tile import Tile
-from rooms import Room, RoomRect
+from map_objects.tile import Tile
+from map_objects.rooms import Room, RoomRect
 
 class Map:
     def __init__(self, width, height):
@@ -10,6 +10,7 @@ class Map:
         self.tiles = self.initialize_tiles()
 
         self.dugout = np.array([[]])
+        self.walls = np.array([[]])
 
     def __str__(self):
         strlist = [''] * self.height
@@ -55,7 +56,7 @@ class Map:
 
     def attach_room(self, room, pt, tries = 3):
         for _ in range(tries):
-            if self.clear_check(room.spaces + pt, np.append(self.dugout, self.get_bounds(self.dugout), axis = 0)):
+            if self.clear_check(room.spaces + pt, np.append(self.dugout, self.walls, axis = 0)):
                 return True
             else:
                 room.transforms[np.random.randint(len(room.transforms))]()
@@ -74,19 +75,20 @@ class Map:
 
         # stamp onto temporary list of spots to dig out
         self.dugout = initroom.spaces
+        self.walls = initroom.boundary
 
         for _ in range(maxrooms):
             # make a new room
             newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10))
             
             # find place for newroom
-            candidate_pts = self.get_bounds(self.dugout)
-            for attach_pt in candidate_pts:
+            for attach_pt in self.walls:
                 if self.attach_room(newroom, attach_pt):
                     self.dugout = np.append(self.dugout, 
                                             newroom.spaces + attach_pt,
                                             axis = 0)
                     self.dugout = np.append(self.dugout, [attach_pt], axis = 0)
+                    self.walls = np.append(self.walls, newroom.boundary, axis = 0)
                     break
 
         print('finish')
