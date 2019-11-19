@@ -13,8 +13,8 @@ class Map:
 
     def __str__(self):
         strlist = [''] * self.height
-        for x in range(self.width):
-            for y in range(self.height):
+        for x in range(self.height):
+            for y in range(self.width):
                 if np.any((self.dugout == [x, y]).all(1)):
                     strlist[x] += '.'
                 else:
@@ -29,6 +29,9 @@ class Map:
         return tiles
     
     def clear_check(self, space1, space2):
+        if  (space1 < [1,1]).any() or (space1 >= [self.height,self.width]).any():
+            return False
+
         for pt in space1:
             if np.any((space2[:] == pt).all(1)):
                 return False
@@ -50,9 +53,9 @@ class Map:
 
         return np.array(bounds)
 
-    def attach_room(self, room, pt, tries = 4):
+    def attach_room(self, room, pt, tries = 3):
         for _ in range(tries):
-            if self.clear_check(room.spaces + pt, self.dugout):
+            if self.clear_check(room.spaces + pt, np.append(self.dugout, self.get_bounds(self.dugout), axis = 0)):
                 return True
             else:
                 room.transforms[np.random.randint(len(room.transforms))]()
@@ -83,11 +86,12 @@ class Map:
                     self.dugout = np.append(self.dugout, 
                                             newroom.spaces + attach_pt,
                                             axis = 0)
+                    self.dugout = np.append(self.dugout, [attach_pt], axis = 0)
                     break
 
         print('finish')
 
 if __name__ == '__main__':
-    a = Map(50,50)
-    a.make_map(1)
+    a = Map(50,30)
+    a.make_map(10)
     print(a)

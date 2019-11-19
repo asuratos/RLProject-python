@@ -1,8 +1,8 @@
 import numpy as np
 
 class Room:
-    def __init__(self, hallwaychance = 0.5):
-        self.spaces = np.array([[0,0]])
+    def __init__(self, hallwaychance = 0.75):
+        self.spaces = np.array([[0,1]])
         self.boundary = np.array([]) 
 
         self.hallwaychance = hallwaychance
