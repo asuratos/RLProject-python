@@ -30,7 +30,7 @@ class Map:
         return tiles
     
     def clear_check(self, space1, space2):
-        if  (space1 < [1,1]).any() or (space1 >= [self.height,self.width]).any():
+        if  (space1 < [1,1]).any() or (space1 > [self.height,self.width]).any():
             return False
 
         for pt in space1:
@@ -54,7 +54,7 @@ class Map:
 
         return np.array(bounds)
 
-    def attach_room(self, room, pt, tries = 3):
+    def attach_room(self, room, pt, tries = 5):
         for _ in range(tries):
             if self.clear_check(room.spaces + pt, np.append(self.dugout, self.walls, axis = 0)):
                 return True
@@ -70,12 +70,12 @@ class Map:
         initroom = RoomRect(10,10, hallwaychance = 0)
         
         # place somewhere random on map
-        initroom.spaces += [np.random.randint(1, self.height - 10),
-                            np.random.randint(1, self.width - 10)]
+        shift = [np.random.randint(1, self.height - 10),
+                 np.random.randint(1, self.width - 10)]
 
         # stamp onto temporary list of spots to dig out
-        self.dugout = initroom.spaces
-        self.walls = initroom.boundary
+        self.dugout = initroom.spaces + shift
+        self.walls = initroom.boundary + shift
 
         for _ in range(maxrooms):
             # make a new room
@@ -88,7 +88,7 @@ class Map:
                                             newroom.spaces + attach_pt,
                                             axis = 0)
                     self.dugout = np.append(self.dugout, [attach_pt], axis = 0)
-                    self.walls = np.append(self.walls, newroom.boundary, axis = 0)
+                    self.walls = np.append(self.walls, newroom.boundary + attach_pt, axis = 0)
                     break
 
         print('finish')
