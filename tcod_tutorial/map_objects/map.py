@@ -12,14 +12,16 @@ class Map:
         self.dugout = np.array([[]])
         self.walls = np.array([[]])
 
+        self.roomcount = 1
+
     def __str__(self):
         strlist = [''] * self.height
-        for x in range(self.height):
-            for y in range(self.width):
+        for x in range(self.width):
+            for y in range(self.height):
                 if np.any((self.dugout == [x, y]).all(1)):
-                    strlist[x] += '.'
+                    strlist[y] += '.'
                 else:
-                    strlist[x] += '#'
+                    strlist[y] += '#'
 
         return '\n'.join(strlist)
 
@@ -30,7 +32,7 @@ class Map:
         return tiles
     
     def clear_check(self, space1, space2):
-        if  (space1 < [1,1]).any() or (space1 > [self.height,self.width]).any():
+        if  (space1 < [1,1]).any() or (space1 > [self.width-1,self.height-1]).any():
             return False
 
         for pt in space1:
@@ -39,39 +41,32 @@ class Map:
         
         return True
 
-    def get_neighbors(self, point):
-        return point + np.array([[1,0],
-                                 [-1,0],
-                                 [0,1],
-                                 [0,-1]])
+    def attach_room(self, room, pt, tries = 10):
+        _bounds = np.array([elem for elem in self.walls if (elem != pt).all()])
+        _bounds = np.vstack((_bounds, self.dugout))
 
-    def get_bounds(self, space):
-        bounds = []
-        for point in space:
-            for neighbor in self.get_neighbors(point):
-                if not np.any((space[:] == neighbor).all(1)):
-                    bounds.append(neighbor)
-
-        return np.array(bounds)
-
-    def attach_room(self, room, pt, tries = 5):
         for _ in range(tries):
-            if self.clear_check(room.spaces + pt, np.append(self.dugout, self.walls, axis = 0)):
+            if self.clear_check(room.spaces + pt, _bounds):
+                self.dugout = np.vstack((self.dugout, room.spaces + pt))
+                self.walls = np.vstack((self.walls, room.boundary + pt))
+
+                self.walls = self.walls[np.all(np.any((self.walls-self.dugout[:, None]), axis=2), axis=0)]
+                self.roomcount += 1
                 return True
             else:
                 room.transforms[np.random.randint(len(room.transforms))]()
             
-            return False
+        return False
 
     #generate map
     def make_map(self, maxrooms):
 
         # make initial room
-        initroom = RoomRect(10,10, hallwaychance = 0)
+        initroom = RoomRect(10,10, hallwaychance = 0, shift = 0)
         
         # place somewhere random on map
-        shift = [np.random.randint(1, self.height - 10),
-                 np.random.randint(1, self.width - 10)]
+        shift = [np.random.randint(1, self.width - 10),
+                 np.random.randint(1, self.height - 10)]
 
         # stamp onto temporary list of spots to dig out
         self.dugout = initroom.spaces + shift
@@ -79,16 +74,12 @@ class Map:
 
         for _ in range(maxrooms):
             # make a new room
-            newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10))
+            newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10), hallwaychance=0.75)
             
+            np.random.shuffle(self.walls)
             # find place for newroom
             for attach_pt in self.walls:
-                if self.attach_room(newroom, attach_pt):
-                    self.dugout = np.append(self.dugout, 
-                                            newroom.spaces + attach_pt,
-                                            axis = 0)
-                    self.dugout = np.append(self.dugout, [attach_pt], axis = 0)
-                    self.walls = np.append(self.walls, newroom.boundary + attach_pt, axis = 0)
+                 if self.attach_room(newroom, attach_pt):
                     break
 
         print('finish')
