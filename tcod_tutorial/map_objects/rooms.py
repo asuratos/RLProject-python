@@ -29,9 +29,6 @@ class Room:
                     bounds.append(neighbor)
         return np.array(bounds)
     
-    def update_boundary(self):
-        pass
-        
     def add_hallway(self, maxlen = 3):
         for _ in range(maxlen):
             if np.random.rand() < self.hallwaychance:
@@ -55,12 +52,6 @@ class Room:
     def rotate_left(self):
         self.spaces = self.spaces.dot([[0,1],[-1,0]])
         self.boundary = self.boundary.dot([[0,1],[-1,0]])
-
-    def collission_check(self,other):
-        for pt in self.spaces:
-            if (other.spaces[:] == pt).all(1).any():
-                return True
-        return False
     
 
 class RoomRect(Room):

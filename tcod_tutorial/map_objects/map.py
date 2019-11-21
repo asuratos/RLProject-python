@@ -34,16 +34,20 @@ class Map:
     def clear_check(self, space1, space2):
         if  (space1 < [1,1]).any() or (space1 > [self.width-2,self.height-2]).any():
             return False
+        
+        s1mins = space1.min(0)
+        s1maxs = space1.max(0)
 
-        for pt in space1:
-            if np.any((space2[:] == pt).all(1)):
+        neighborhood = space2[np.logical_and((space2 >= s1mins).all(1),(space2 <= s1maxs).all(1))]
+
+        for pt in neighborhood:
+            if np.any((space1[:] == pt).all(1)):
                 return False
         
         return True
 
     def attach_room(self, room, pt, tries = 10):
         _bounds = self.walls[(self.walls != pt).all(1)]
-        # _bounds = np.array([elem for elem in self.walls if (elem != pt).all(0)])
         _bounds = np.vstack((self.dugout,_bounds))
 
         for _ in range(tries):
@@ -80,8 +84,11 @@ class Map:
             np.random.shuffle(self.walls)
             # find place for newroom
             for attach_pt in self.walls:
-                 if self.attach_room(newroom, attach_pt):
+                if self.attach_room(newroom, attach_pt):
                     break
+            
+            if self.dugout.shape[0] / (self.height*self.width) > 0.6:
+                break
 
         print('finish')
 
