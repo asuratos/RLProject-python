@@ -32,7 +32,7 @@ class Map:
         return tiles
     
     def clear_check(self, space1, space2):
-        if  (space1 < [1,1]).any() or (space1 > [self.width-1,self.height-1]).any():
+        if  (space1 < [1,1]).any() or (space1 > [self.width-2,self.height-2]).any():
             return False
 
         for pt in space1:
@@ -42,15 +42,16 @@ class Map:
         return True
 
     def attach_room(self, room, pt, tries = 10):
-        _bounds = np.array([elem for elem in self.walls if (elem != pt).all()])
-        _bounds = np.vstack((_bounds, self.dugout))
+        _bounds = self.walls[(self.walls != pt).all(1)]
+        # _bounds = np.array([elem for elem in self.walls if (elem != pt).all(0)])
+        _bounds = np.vstack((self.dugout,_bounds))
 
         for _ in range(tries):
             if self.clear_check(room.spaces + pt, _bounds):
                 self.dugout = np.vstack((self.dugout, room.spaces + pt))
                 self.walls = np.vstack((self.walls, room.boundary + pt))
 
-                self.walls = self.walls[np.all(np.any((self.walls-self.dugout[:, None]), axis=2), axis=0)]
+                # self.walls = self.walls[np.all(np.any((self.walls-self.dugout[:, None]), axis=2), axis=0)]
                 self.roomcount += 1
                 return True
             else:
@@ -74,7 +75,7 @@ class Map:
 
         for _ in range(maxrooms):
             # make a new room
-            newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10), hallwaychance=0.75)
+            newroom = RoomRect(np.random.randint(5,15), np.random.randint(5,15), hallwaychance=0.75)
             
             np.random.shuffle(self.walls)
             # find place for newroom

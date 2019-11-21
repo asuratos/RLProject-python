@@ -5,7 +5,7 @@ import numpy as np
 class Room:
     def __init__(self, hallwaychance = 0.75):
         self.spaces = np.array([[0,0]])
-        self.boundary = np.array([[0,-1]])
+        self.boundary = np.array([[0,0]])
 
         self.hallwaychance = hallwaychance
         self.halllength = 0
@@ -32,27 +32,29 @@ class Room:
     def update_boundary(self):
         pass
         
-    def add_hallway(self, maxlen = 5):
+    def add_hallway(self, maxlen = 3):
         for _ in range(maxlen):
             if np.random.rand() < self.hallwaychance:
                 self.halllength += 1
                 self.spaces = np.vstack((self.spaces, [[0,self.halllength]]))
-                self.boundary = np.vstack((self.boundary, [[-1, self.halllength],
-                                                           [1, self.halllength]])) 
             else:
                 break
 
     def mirror_horizontal(self):
         self.spaces = self.spaces * [-1, 1]
+        self.boundary = self.boundary * [-1, 1]
 
     def mirror_vertical(self):
         self.spaces = self.spaces * [1, -1]
+        self.boundary = self.boundary * [1, -1]
 
     def rotate_right(self):
         self.spaces = self.spaces.dot([[0,-1],[1,0]])
+        self.boundary = self.boundary.dot([[0,-1],[1,0]])
 
     def rotate_left(self):
         self.spaces = self.spaces.dot([[0,1],[-1,0]])
+        self.boundary = self.boundary.dot([[0,1],[-1,0]])
 
     def collission_check(self,other):
         for pt in self.spaces:
@@ -79,7 +81,7 @@ class RoomRect(Room):
         body = [[x,y] for x in range(w) for y in range(h)]
 
         if self.shift:
-            shift = np.array([-np.random.randint(1, self.w-1), self.halllength])
+            shift = np.array([-np.random.randint(1, self.w-1), self.halllength+1])
             body += shift
         
         #self.spaces = np.append(self.spaces, body, axis = 0)
