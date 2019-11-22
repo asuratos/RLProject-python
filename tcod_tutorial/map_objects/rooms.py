@@ -4,7 +4,7 @@ import numpy as np
 
 class Room:
     def __init__(self):
-        self.entryway = np.array([[0,0]], dtype = float)
+        self.entryway = np.array([0,0], dtype = float)
         self.boundary = np.array([[0,0]])
         self.w = 0
         self.h = 0
@@ -14,35 +14,38 @@ class Room:
                            self.mirror_horizontal,        
                            self.mirror_vertical]
     
+    def __str__(self):
+        return self.spaces.__str__()
+
     @property
     def centroid(self):
-        return np.array([self.w/2, self.h/2])
+        return np.array(self.spaces.shape)/2
         
     def mirror_horizontal(self):
-        self.spaces = self.spaces[:,::-1]
+        self.spaces = self.spaces[::-1,:]
 
         self.entryway -= self.centroid
         self.entryway *= [-1,1]
         self.entryway += self.centroid
 
     def mirror_vertical(self):
-        self.spaces = self.spaces[::-1,:]
+        self.spaces = self.spaces[:,::-1]
 
         self.entryway -= self.centroid
         self.entryway *= [1,-1]
         self.entryway += self.centroid
 
     def rotate_right(self):
+        self.entryway -= self.centroid
         self.spaces = self.spaces.T[:,::-1]
 
-        self.entryway -= self.centroid
         self.entryway = self.entryway[::-1] * [1,-1]
         self.entryway += self.centroid
 
     def rotate_left(self):
+        self.entryway -= self.centroid
         self.spaces = self.spaces.T[::-1,:]
 
-        self.entryway -= self.centroid
         self.entryway = self.entryway[::-1] * [-1,1]
         self.entryway += self.centroid
     
@@ -62,7 +65,7 @@ class RoomRect(Room):
         hall_pt = np.random.randint(1, self.h - 1)
         hall_len = np.random.randint(1, maxlen + 1)
 
-        self.entryway[:,1] += hall_pt
+        self.entryway[1] += hall_pt
         self.w += hall_len
         
         hall = np.zeros((hall_len, self.h))
@@ -72,5 +75,7 @@ class RoomRect(Room):
     def generate_body(self, w, h):
         self.spaces = np.ones((w,h))
         
-        
-print('finish')
+if __name__ == '__main__':
+    a = RoomRect(10,8)
+    a.rotate_left()
+    print('finish')
