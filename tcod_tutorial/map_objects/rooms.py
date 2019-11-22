@@ -19,7 +19,7 @@ class Room:
 
     @property
     def centroid(self):
-        return np.array(self.spaces.shape)/2
+        return (np.array(self.spaces.shape)-1)/2
         
     def mirror_horizontal(self):
         self.spaces = self.spaces[::-1,:]
