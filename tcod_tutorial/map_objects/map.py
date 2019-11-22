@@ -7,11 +7,17 @@ class Map:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.tiles = self.initialize_tiles()
+        # self.tiles = self.initialize_tiles()
 
-        self.dugout = np.array([[]])
-        self.walls = np.array([[]])
-
+        self.floor = np.zeros((self.width,self.height))
+        
+        self.walls = {
+            '-x' : [],
+            '-y' : [],
+            '+x' : [],
+            '+y' : []
+        }
+        
         self.roomcount = 1
 
     def __str__(self):
@@ -74,18 +80,25 @@ class Map:
                  np.random.randint(1, self.height - 10)]
 
         # stamp onto temporary list of spots to dig out
-        self.dugout = initroom.spaces + shift
-        self.walls = initroom.boundary + shift
+        #self.dugout = initroom.spaces + shift
+        #self.walls = initroom.boundary + shift
 
         for _ in range(maxrooms):
             # make a new room
             newroom = RoomRect(np.random.randint(5,15), np.random.randint(5,15), hallwaychance=0.75)
             
-            np.random.shuffle(self.walls)
-            # find place for newroom
-            for attach_pt in self.walls:
-                if self.attach_room(newroom, attach_pt):
-                    break
+            # for # attempts
+            for  _ in range(attempts):
+                
+                # transform room               
+                np.random.choice(newroom.transforms)()
+                
+                np.random.shuffle(self.walls[newroom.facing])
+                
+                # for each valid wall, try
+                for attach_pt in self.walls[newroom.facing]:
+                    if self.attach_room(newroom, attach_pt):
+                        break
             
             if self.dugout.shape[0] / (self.height*self.width) > 0.6:
                 break
