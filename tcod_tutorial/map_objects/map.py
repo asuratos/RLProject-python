@@ -10,7 +10,12 @@ class Map:
         self.tiles = self.initialize_tiles()
 
         self.dugout = np.array([[]])
-        self.walls = np.array([[]])
+        self.walls = {
+            '+y' : [] ,
+            '+x' : [] ,
+            '-y' : [] ,
+            '-x' : [] 
+        }
 
         self.roomcount = 1
 
@@ -24,7 +29,6 @@ class Map:
                     strlist[y] += '#'
 
         return '\n'.join(strlist)
-
 
     def initialize_tiles(self):
         tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
@@ -46,20 +50,21 @@ class Map:
         
         return True
 
-    def attach_room(self, room, pt, tries = 10):
-        _bounds = self.walls[(self.walls != pt).all(1)]
-        _bounds = np.vstack((self.dugout,_bounds))
+    def attach_room(self, room, attach_pts):
 
-        for _ in range(tries):
-            if self.clear_check(room.spaces + pt, _bounds):
-                self.dugout = np.vstack((self.dugout, room.spaces + pt))
-                self.walls = np.vstack((self.walls, room.boundary + pt))
+        for pt in attach_pts:
+            if self.clear_check(room.spaces + pt, self.allbounds):
 
-                # self.walls = self.walls[np.all(np.any((self.walls-self.dugout[:, None]), axis=2), axis=0)]
+                self.dugout = np.vstack((self.dugout, room.spaces + pt, pt))
+
+                for key in room.boundary:
+                    self.walls[key] = np.vstack((self.walls[key], 
+                                                 room.boundary[key] + pt))
+
+                self.allbounds = np.vstack([bound for bound in self.walls.values()])
+
                 self.roomcount += 1
                 return True
-            else:
-                room.transforms[np.random.randint(len(room.transforms))]()
             
         return False
 
@@ -75,17 +80,24 @@ class Map:
 
         # stamp onto temporary list of spots to dig out
         self.dugout = initroom.spaces + shift
-        self.walls = initroom.boundary + shift
+        
+        for key in self.walls:
+            self.walls[key] = initroom.boundary[key] + shift
+        self.allbounds = np.vstack([bound for bound in self.walls.values()])
 
         for _ in range(maxrooms):
             # make a new room
             newroom = RoomRect(np.random.randint(5,15), np.random.randint(5,15), hallwaychance=0.75)
+            np.random.choice(newroom.transforms)()
             
-            np.random.shuffle(self.walls)
+            # np.random.shuffle(self.walls)
             # find place for newroom
-            for attach_pt in self.walls:
-                if self.attach_room(newroom, attach_pt):
+            for _ in range(2):
+                if self.attach_room(newroom,self.walls[newroom.facing]):
                     break
+                else:
+                    np.random.choice(newroom.transforms)()
+
             
             if self.dugout.shape[0] / (self.height*self.width) > 0.6:
                 break
