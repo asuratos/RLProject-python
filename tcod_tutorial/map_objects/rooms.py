@@ -51,15 +51,9 @@ class Room:
         return _bounds
 
     def add_hallway(self, maxlen = 3):
-        for _ in range(maxlen):
-            if np.random.rand() < self.hallwaychance:
-                self.halllength += 1
-                if self.halllength == 1:
-                    self.spaces = np.array([[0,1]])
-                else:
-                    self.spaces = np.vstack((self.spaces, [[0,self.halllength]]))
-            else:
-                break
+        self.halllength = np.random.randint(1, maxlen+1)
+
+        self.spaces = np.hstack((np.zeros((self.halllength,1)), np.arange(1, self.halllength+1)[:,None]))
 
     def mirror_horizontal(self):
         self.spaces = self.spaces * [-1, 1]

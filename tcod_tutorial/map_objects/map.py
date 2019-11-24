@@ -10,6 +10,7 @@ class Map:
         self.tiles = self.initialize_tiles()
 
         self.dugout = np.array([[]])
+        self.doors = None
         self.walls = {
             '+y' : [] ,
             '+x' : [] ,
@@ -23,7 +24,9 @@ class Map:
         strlist = [''] * self.height
         for x in range(self.width):
             for y in range(self.height):
-                if np.any((self.dugout == [x, y]).all(1)):
+                if np.any((self.doors == [x,y]).all(1)):
+                    strlist[y] += '+'
+                elif np.any((self.dugout == [x, y]).all(1)):
                     strlist[y] += '.'
                 else:
                     strlist[y] += '#'
@@ -50,12 +53,20 @@ class Map:
         
         return True
 
+    def place_door(self,pt):
+        if self.doors is not None:
+            self.doors = np.vstack((self.doors, pt))
+        else:
+            self.doors = pt
+
     def attach_room(self, room, attach_pts):
 
         for pt in attach_pts:
             if self.clear_check(room.spaces + pt, self.allbounds):
 
-                self.dugout = np.vstack((self.dugout, room.spaces + pt, pt))
+                self.dugout = np.vstack((self.dugout, room.spaces + pt))
+
+                self.place_door(pt)
 
                 for key in room.boundary:
                     self.walls[key] = np.vstack((self.walls[key], 
@@ -87,7 +98,7 @@ class Map:
 
         for _ in range(maxrooms):
             # make a new room
-            newroom = RoomRect(np.random.randint(5,15), np.random.randint(5,15), hallwaychance=0.75)
+            newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10), hallwaychance=0.75)
             np.random.choice(newroom.transforms)()
             
             # np.random.shuffle(self.walls)
