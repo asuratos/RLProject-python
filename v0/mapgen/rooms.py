@@ -27,12 +27,6 @@ class Room:
     def facing(self):
         return self.directions[self.facing_index]
 
-    def get_neighbors(self, point):
-        return point + np.array([[1,0],
-                                 [-1,0],
-                                 [0,1],
-                                 [0,-1]])
-
     def get_bounds(self):
         
         dirs = {

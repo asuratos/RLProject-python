@@ -3,6 +3,30 @@ import numpy as np
 # from map_objects.tile import Tile
 from mapgen.rooms import Room, RoomRect
 
+class RoomWrapper:
+    '''
+    Wrapper that flattens room vector coordinates into 1d form used by the map
+    digger class
+    '''
+    def __init__(self, room, mapwidth):
+        self._room = room
+        self.mapwidth = mapwidth
+
+    def __getattr__(self,attr):
+        if attr in self.__dict__:
+            return getattr(self, attr)
+        
+        return getattr(self._room, attr)
+
+    @property
+    def spaces(self):
+        return self._room.spaces[:,0] + (self.mapwidth * self._room.spaces[:,1])
+
+    @property
+    def boundary(self):
+        return {key : bound[:,0] + (self.mapwidth * bound[:,1]) for (key,bound) in self._room.boundary.items()}
+
+
 class Digger:
     def __init__(self, width, height):
         self.width = width
@@ -24,9 +48,10 @@ class Digger:
         strlist = [''] * self.height
         for x in range(self.width):
             for y in range(self.height):
-                if np.any((self.doors == [x,y]).all(1)):
+                pt = x + self.width * y
+                if pt in self.doors:
                     strlist[y] += '+'
-                elif np.any((self.floor == [x, y]).all(1)):
+                elif pt in self.floor:
                     strlist[y] += '.'
                 else:
                     strlist[y] += '#'
@@ -38,41 +63,47 @@ class Digger:
 
     #     return tiles
     
+    def flatten(self, space):
+        return space[:,0] + (space[:,1] * self.width)
+
+
     def clear_check(self, space1, space2):
-        if  (space1 < [1,1]).any() or (space1 > [self.width-2,self.height-2]).any():
+        # check boundaries
+        if (space1 <= self.width).any() or (space1 % self.width == 0).any() or  \
+           ((space1+1) % self.width == 0).any() or (space1 >= ((self.width -1) * self.height)).any():
             return False
         
-        s1mins = space1.min(0)
-        s1maxs = space1.max(0)
+        # figure out how to narrow down the thing
+        # s1mins = space1.min(0)
+        # s1maxs = space1.max(0)
 
-        neighborhood = space2[np.logical_and((space2 >= s1mins).all(1),(space2 <= s1maxs).all(1))]
-
-        for pt in neighborhood:
-            if np.any((space1[:] == pt).all(1)):
-                return False
+        # neighborhood = space2[np.logical_and((space2 >= s1mins).all(1),(space2 <= s1maxs).all(1))]
+        if np.intersect1d(space1, space2).size != 0:
+            return False
         
         return True
 
     def place_door(self,pt):
         if self.doors is not None:
-            self.doors = np.vstack((self.doors, pt))
+            self.doors = np.append(self.doors, pt)
         else:
             self.doors = pt
 
     def attach_room(self, room, attach_pts):
 
         for pt in attach_pts:
+            
             if self.clear_check(room.spaces + pt, self.allbounds):
 
-                self.floor = np.vstack((self.floor, room.spaces + pt))
+                self.floor = np.append(self.floor, room.spaces + pt)
 
                 self.place_door(pt)
 
                 for key in room.boundary:
-                    self.walls[key] = np.vstack((self.walls[key], 
+                    self.walls[key] = np.hstack((self.walls[key], 
                                                  room.boundary[key] + pt))
 
-                self.allbounds = np.vstack([bound for bound in self.walls.values()])
+                self.allbounds = np.hstack([bound for bound in self.walls.values()])
 
                 self.roomcount += 1
                 return True
@@ -83,28 +114,32 @@ class Digger:
     def dig_floor(self, maxrooms):
 
         # make initial room
-        initroom = RoomRect(10,10, hallwaychance = 0, shift = 0)
+        initroom = RoomWrapper(RoomRect(10,10, hallwaychance = 0, shift = 0),
+                            self.width)
         
         # place somewhere random on map
-        shift = [np.random.randint(1, self.width - 10),
-                 np.random.randint(1, self.height - 10)]
+        shift = np.random.randint(1, self.width - 10) + \
+                (np.random.randint(1, self.height - 10) * self.width)
 
         # stamp onto temporary list of spots to dig out
         self.floor = initroom.spaces + shift
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
+
         self.allbounds = np.vstack([bound for bound in self.walls.values()])
 
         for _ in range(maxrooms):
             # make a new room
-            newroom = RoomRect(np.random.randint(5,10), np.random.randint(5,10), hallwaychance=0.75)
+            newroom = RoomWrapper(RoomRect(np.random.randint(5,10), 
+                                np.random.randint(5,10), hallwaychance=0.75),
+                                self.width)
             np.random.choice(newroom.transforms)()
             
             # np.random.shuffle(self.walls)
             # find place for newroom
             for _ in range(2):
-                if self.attach_room(newroom,self.walls[newroom.facing]):
+                if self.attach_room(newroom, self.walls[newroom.facing]):
                     break
                 else:
                     np.random.choice(newroom.transforms)()
