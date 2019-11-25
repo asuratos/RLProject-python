@@ -3,13 +3,13 @@ import numpy as np
 # from map_objects.tile import Tile
 from mapgen.rooms import Room, RoomRect
 
-class Map:
+class Digger:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.tiles = self.initialize_tiles()
+        # self.tiles = self.initialize_tiles()
 
-        self.dugout = np.array([[]])
+        self.floor = np.array([[]])
         self.doors = None
         self.walls = {
             '+y' : [] ,
@@ -26,17 +26,17 @@ class Map:
             for y in range(self.height):
                 if np.any((self.doors == [x,y]).all(1)):
                     strlist[y] += '+'
-                elif np.any((self.dugout == [x, y]).all(1)):
+                elif np.any((self.floor == [x, y]).all(1)):
                     strlist[y] += '.'
                 else:
                     strlist[y] += '#'
 
         return '\n'.join(strlist)
 
-    def initialize_tiles(self):
-        tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
+    # def initialize_tiles(self):
+    #     tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
 
-        return tiles
+    #     return tiles
     
     def clear_check(self, space1, space2):
         if  (space1 < [1,1]).any() or (space1 > [self.width-2,self.height-2]).any():
@@ -64,7 +64,7 @@ class Map:
         for pt in attach_pts:
             if self.clear_check(room.spaces + pt, self.allbounds):
 
-                self.dugout = np.vstack((self.dugout, room.spaces + pt))
+                self.floor = np.vstack((self.floor, room.spaces + pt))
 
                 self.place_door(pt)
 
@@ -80,7 +80,7 @@ class Map:
         return False
 
     #generate map
-    def make_map(self, maxrooms):
+    def dig_floor(self, maxrooms):
 
         # make initial room
         initroom = RoomRect(10,10, hallwaychance = 0, shift = 0)
@@ -90,7 +90,7 @@ class Map:
                  np.random.randint(1, self.height - 10)]
 
         # stamp onto temporary list of spots to dig out
-        self.dugout = initroom.spaces + shift
+        self.floor = initroom.spaces + shift
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
@@ -110,12 +110,12 @@ class Map:
                     np.random.choice(newroom.transforms)()
 
             
-            if self.dugout.shape[0] / (self.height*self.width) > 0.6:
+            if self.floor.shape[0] / (self.height*self.width) > 0.6:
                 break
 
         print('finish')
 
 if __name__ == '__main__':
-    a = Map(50,30)
-    a.make_map(10)
+    a = Digger(50,30)
+    a.dig_floor(10)
     print(a)

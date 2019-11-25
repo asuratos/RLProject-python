@@ -1,7 +1,7 @@
-from map_objects.map import Map
+from mapgen.dig import Digger
 
-a = Map(70,35)
-a.make_map(50)
+a = Digger(70,35)
+a.dig_floor(50)
 print(a)
-print(a.dugout.size/2)
+print(a.floor.size/2)
 print(a.roomcount)
