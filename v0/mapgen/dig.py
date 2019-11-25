@@ -74,11 +74,20 @@ class Digger:
             return False
         
         # figure out how to narrow down the thing
+        s1miny = (space1 // self.width).min()
+        s1maxy = (space1 // self.width).max()
+        s1minx = (space1 % self.width).min()
+        s1maxx = (space1 % self.width).max()
         # s1mins = space1.min(0)
         # s1maxs = space1.max(0)
-
+        neighborhood = space2[np.logical_and.reduce(np.stack((
+            space2 // self.width >= s1miny,
+            space2 // self.width <= s1maxy,
+            space2 % self.width >= s1minx,
+            space2 % self.width <= s1maxx
+        )))]
         # neighborhood = space2[np.logical_and((space2 >= s1mins).all(1),(space2 <= s1maxs).all(1))]
-        if np.intersect1d(space1, space2).size != 0:
+        if np.intersect1d(space1, neighborhood).size != 0:
             return False
         
         return True
