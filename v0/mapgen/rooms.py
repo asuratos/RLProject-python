@@ -4,7 +4,7 @@ import numpy as np
 
 class Room:
     def __init__(self, hallwaychance = 0.75):
-        self.spaces = np.array([[]])
+        self.spaces = np.array([[]], dtype = int)
         self.boundary = {
             '+y' : [] ,
             '+x' : [] ,
@@ -93,7 +93,7 @@ class RoomRect(Room):
         self.boundary = self.get_bounds()
 
     def generate_body(self, w, h):
-        body = np.array([[x,y] for x in range(w) for y in range(h)])
+        body = np.array([[x,y] for x in range(w) for y in range(h)], dtype = int)
 
         if self.shift:
             shift = np.array([-np.random.randint(1, self.w-1), self.halllength+1])
