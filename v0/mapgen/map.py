@@ -1,7 +1,7 @@
 import numpy as np
 
-from map_objects.tile import Tile
-from map_objects.rooms import Room, RoomRect
+# from map_objects.tile import Tile
+from mapgen.rooms import Room, RoomRect
 
 class Map:
     def __init__(self, width, height):
