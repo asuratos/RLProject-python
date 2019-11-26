@@ -2,6 +2,7 @@ import numpy as np
 
 # from map_objects.tile import Tile
 from mapgen.rooms import Room, RoomRect
+from mapgen.graph import Graph
 
 class RoomWrapper:
     '''
@@ -43,6 +44,7 @@ class Digger:
             '-x' : [] 
         }
 
+        self.roomgraph = Graph()
         self.roomcount = 1
 
     def __str__(self):
@@ -90,7 +92,7 @@ class Digger:
             space2 % self.width >= s1minx,
             space2 % self.width <= s1maxx
         )))]
-        # neighborhood = space2[np.logical_and((space2 >= s1mins).all(1),(space2 <= s1maxs).all(1))]
+
         if np.intersect1d(space1, neighborhood).size != 0:
             return False
         
