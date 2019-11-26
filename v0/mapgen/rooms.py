@@ -18,7 +18,8 @@ class Room:
         self.hallwaychance = hallwaychance
         self.halllength = 0
 
-        self.transforms = [self.rotate_left,
+        self.transforms = [None,
+                           self.rotate_left,
                            self.rotate_right,
                            self.mirror_horizontal,        
                            self.mirror_vertical]
@@ -49,6 +50,11 @@ class Room:
 
         self.spaces = np.hstack((np.zeros((self.halllength,1)), np.arange(1, self.halllength+1)[:,None]))
 
+    def transform(self):
+        _choice = np.random.choice(self.transforms)
+        if _choice:
+            _choice()    
+        
     def mirror_horizontal(self):
         self.spaces = self.spaces * [-1, 1]
 
