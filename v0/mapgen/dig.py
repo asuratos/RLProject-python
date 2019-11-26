@@ -33,7 +33,7 @@ class Digger:
         self.height = height
         # self.tiles = self.initialize_tiles()
 
-        self.floor = [False] * (self.width * self.height)
+        self.floor = np.zeros((self.width * self.height), dtype = int)
         self.doors = None
         self.walls = {
             '+y' : [] ,
@@ -51,7 +51,7 @@ class Digger:
                 pt = x + self.width * y
                 if pt in self.doors:
                     strlist[y] += '+'
-                elif self.floor[pt]:
+                elif self.floor[pt] is not False:
                     strlist[y] += f'{chr(ord("a") + self.floor[pt])}'
                 else:
                     strlist[y] += '.'
@@ -73,13 +73,12 @@ class Digger:
            ((space1+1) % self.width == 0).any() or (space1 // self.width == self.height -1).any():
             return False
         
-        # figure out how to narrow down the thing
+        # narrow down the search
         s1miny = (space1 // self.width).min()
         s1maxy = (space1 // self.width).max()
         s1minx = (space1 % self.width).min()
         s1maxx = (space1 % self.width).max()
-        # s1mins = space1.min(0)
-        # s1maxs = space1.max(0)
+        
         neighborhood = space2[np.logical_and.reduce(np.stack((
             space2 // self.width >= s1miny,
             space2 // self.width <= s1maxy,
@@ -103,16 +102,18 @@ class Digger:
         for pt in attach_pts:
             if (pt // self.width == 0) or ((pt+1) // self.width == self.height -1) or\
                 (pt % self.width == 0) or ((pt+1) % self.width == 0):
-                break
+                continue
             
-            if self.clear_check(room.spaces + pt, self.allbounds):
+            _invalidpts = np.append(self.allbounds, np.argwhere(self.floor > 0))
+            
+            if self.clear_check(room.spaces + pt, _invalidpts):
 
                 self.roomcount += 1
 
                 for space in room.spaces:
-                    try:
+                    if space + pt < self.width*self.height:
                         self.floor[int(space + pt)] = self.roomcount 
-                    except IndexError:
+                    else
                         pass
 
                 self.place_door(pt)
@@ -139,7 +140,7 @@ class Digger:
 
         # stamp onto temporary list of spots to dig out
         for space in initroom.spaces:
-            self.floor[space + shift] = 1
+            self.floor[space + shift] = self.roomcount
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
