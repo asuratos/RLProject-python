@@ -152,7 +152,7 @@ class Digger:
             newroom = RoomWrapper(RoomRect(np.random.randint(5,10), 
                                 np.random.randint(5,10), hallwaychance=0.75),
                                 self.width)
-            np.random.choice(newroom.transforms)()
+            newroom.transform()
             
             # np.random.shuffle(self.walls)
             # find place for newroom
@@ -160,7 +160,7 @@ class Digger:
                 if self.attach_room(newroom, self.walls[newroom.facing]):
                     break
                 else:
-                    np.random.choice(newroom.transforms)()
+                    newroom.transform()
 
             
             # if np.sum(self.floor) / (self.height*self.width) > 0.6:
