@@ -28,10 +28,11 @@ class RoomWrapper:
 
 
 class Digger:
-    def __init__(self, width, height):
+    def __init__(self, width, height, letters = False):
         self.width = width
         self.height = height
         # self.tiles = self.initialize_tiles()
+        self.lettersflag = letters
 
         self.floor = np.zeros((self.width * self.height), dtype = int)
         self.doors = None
@@ -51,10 +52,17 @@ class Digger:
                 pt = x + self.width * y
                 if pt in self.doors:
                     strlist[y] += '+'
-                elif self.floor[pt] is not False:
-                    strlist[y] += f'{chr(ord("a") + self.floor[pt])}'
+                elif self.floor[pt] > 0:
+                    if self.lettersflag:
+                        strlist[y] += f'{chr(ord("a") - 1 + self.floor[pt])}'
+                    else:
+                        strlist[y] += '.'
                 else:
-                    strlist[y] += '.'
+                    if self.lettersflag:
+                        strlist[y] += '.'
+                    else:
+                        strlist[y] += '#'
+
 
         return '\n'.join(strlist)
 
@@ -63,9 +71,6 @@ class Digger:
 
     #     return tiles
     
-    def flatten(self, space):
-        return space[:,0] + (space[:,1] * self.width)
-
 
     def clear_check(self, space1, space2):
         # check boundaries
@@ -113,7 +118,7 @@ class Digger:
                 for space in room.spaces:
                     if space + pt < self.width*self.height:
                         self.floor[int(space + pt)] = self.roomcount 
-                    else
+                    else:
                         pass
 
                 self.place_door(pt)
@@ -166,7 +171,7 @@ class Digger:
             # if np.sum(self.floor) / (self.height*self.width) > 0.6:
             #     break
 
-        print('finish')
+        # print('finish')
 
 if __name__ == '__main__':
     a = Digger(50,30)
