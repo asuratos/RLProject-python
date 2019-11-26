@@ -37,6 +37,7 @@ class Digger:
 
         self.floor = np.zeros((self.width * self.height), dtype = int)
         self.doors = None
+        self.connections = np.zeros((self.width * self.height), dtype = int)
         self.walls = {
             '+y' : [] ,
             '+x' : [] ,
@@ -116,6 +117,8 @@ class Digger:
             if self.clear_check(room.spaces + pt, _invalidpts):
 
                 self.roomcount += 1
+                self.roomgraph.add_node(self.roomcount)
+                self.roomgraph.add_edge(self.roomcount, self.connections[int(pt)])
 
                 for space in room.spaces:
                     if space + pt < self.width*self.height:
@@ -128,6 +131,8 @@ class Digger:
                 for key in room.boundary:
                     self.walls[key] = np.hstack((self.walls[key], 
                                                  room.boundary[key] + pt))
+                    for shift in room.boundary[key] + pt:
+                        self.connections[int(shift)] = self.roomcount
 
                 self.allbounds = np.hstack([bound for bound in self.walls.values()])
                 return True
@@ -151,8 +156,11 @@ class Digger:
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
+            for pt in initroom.boundary[key] + shift:
+                self.connections[pt] = self.roomcount
 
         self.allbounds = np.vstack([bound for bound in self.walls.values()])
+        self.roomgraph.add_node(self.roomcount)
 
         for _ in range(maxrooms):
             # make a new room

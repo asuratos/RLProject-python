@@ -3,6 +3,10 @@ class Graph:
         self.nodes = []
         self.edges = {}
 
+    def __str__(self):
+        rep = [f'{key}:{value}' for (key,value) in self.edges.items()]
+        return '\n'.join(rep) 
+
     def add_node(self, id):
         self.nodes.append(id)
     

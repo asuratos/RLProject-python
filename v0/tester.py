@@ -12,6 +12,8 @@ terminal.set(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
 terminal.printf(0, 0, str(a))
 terminal.printf(mapwidth+1, 15, 'Side pane here!')
 terminal.refresh()
+
+print(a.roomgraph)
  
 while terminal.read() != terminal.TK_CLOSE:
     pass
