@@ -82,10 +82,10 @@ class Digger:
             return False
         
         # narrow down the search
-        s1miny = (space1 // self.width).min()
-        s1maxy = (space1 // self.width).max()
-        s1minx = (space1 % self.width).min()
-        s1maxx = (space1 % self.width).max()
+        s1miny = np.amin(space1 // self.width)
+        s1maxy = np.amax(space1 // self.width)
+        s1minx = np.amin(space1 % self.width)
+        s1maxx = np.amax(space1 % self.width)
         
         neighborhood = space2[np.logical_and.reduce(np.stack((
             space2 // self.width >= s1miny,
