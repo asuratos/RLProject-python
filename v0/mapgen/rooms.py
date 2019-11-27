@@ -54,7 +54,7 @@ class Room:
     def transform(self):
         _choice = np.random.choice(self.transforms)
         if _choice:
-            _choice()    
+            _choice()
         
     def mirror_horizontal(self):
         self.spaces = self.spaces * [-1, 1]

@@ -33,7 +33,7 @@ class Digger:
         self.width = width
         self.height = height
         # self.tiles = self.initialize_tiles()
-        self.lettersflag = letters
+        self.lettersflag = letters # this flag shouldn't be in this class
 
         self.floor = np.zeros((self.width * self.height), dtype = int)
         self.doors = None
@@ -127,8 +127,7 @@ class Digger:
                 for key in room.boundary:
                     self.walls[key] = np.hstack((self.walls[key], 
                                                  room.boundary[key] + pt))
-                    for shift in room.boundary[key] + pt:
-                        self.connections[int(shift)] = self.roomcount
+                    self.connections[room.boundary[key] + pt] = self.roomcount
 
                 self.allbounds = np.hstack([bound for bound in self.walls.values()])
                 return True
@@ -151,8 +150,7 @@ class Digger:
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
-            for pt in initroom.boundary[key] + shift:
-                self.connections[pt] = self.roomcount
+            self.connections[self.walls[key]] = self.roomcount
 
         self.allbounds = np.vstack([bound for bound in self.walls.values()])
         self.roomgraph.add_node(self.roomcount)
