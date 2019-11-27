@@ -2,7 +2,7 @@ import numpy as np
 
 # from map_objects.tile import Tile
 from mapgen.rooms import Room, RoomRect
-from mapgen.graph import Graph
+from graphs.graph import Graph
 
 class RoomWrapper:
     '''
@@ -120,11 +120,7 @@ class Digger:
                 self.roomgraph.add_node(self.roomcount)
                 self.roomgraph.add_edge(self.roomcount, self.connections[int(pt)])
 
-                for space in room.spaces:
-                    if space + pt < self.width*self.height:
-                        self.floor[int(space + pt)] = self.roomcount 
-                    else:
-                        pass
+                self.floor[room.spaces + pt] = self.roomcount 
 
                 self.place_door(pt)
 
@@ -151,8 +147,7 @@ class Digger:
                 (np.random.randint(1, self.height - 10) * self.width)
 
         # stamp onto temporary list of spots to dig out
-        for space in initroom.spaces:
-            self.floor[space + shift] = self.roomcount
+        self.floor[initroom.spaces + shift] = self.roomcount
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
@@ -178,8 +173,8 @@ class Digger:
                     newroom.transform()
 
             
-            # if np.sum(self.floor) / (self.height*self.width) > 0.6:
-            #     break
+            if np.count_nonzero(self.floor) / (self.height*self.width) > 0.6:
+                break
 
         # print('finish')
 

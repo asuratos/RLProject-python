@@ -48,7 +48,8 @@ class Room:
     def add_hallway(self, maxlen = 3):
         self.halllength = np.random.randint(1, maxlen+1)
 
-        self.spaces = np.hstack((np.zeros((self.halllength,1)), np.arange(1, self.halllength+1)[:,None]))
+        self.spaces = np.hstack((np.zeros((self.halllength,1), dtype = int), 
+                          np.arange(1, self.halllength+1, dtype = int)[:,None]))
 
     def transform(self):
         _choice = np.random.choice(self.transforms)
