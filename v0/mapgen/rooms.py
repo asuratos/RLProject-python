@@ -112,3 +112,35 @@ class RoomRect(Room):
             self.spaces = np.vstack((self.spaces, body))
         
         
+class RoomCross(Room):
+    def __init__(self, w1, h1, w2, h2, hallwaychance = 0.5):
+        super().__init__(hallwaychance)
+        self.w1, self.w2 = w1, w2 
+        self.h1, self.h2 = h1, h2
+
+        if np.random.rand() < self.hallwaychance:
+            self.add_hallway()
+        
+        # make a rectangle
+        self.generate_body()
+        self.boundary = self.get_bounds()
+
+    def generate_body(self):
+        r1 = np.array([[x,y] for x in range(self.w1) for y in range(self.h1)], dtype = int)
+
+        shift = np.array([-np.random.randint(1, self.w1-1), self.halllength+1])
+        r1 += shift
+        
+        r2 = np.array([[x,y] for x in range(self.w2) for y in range(self.h2)], dtype = int)
+
+        shift += np.array([-np.random.randint(1, (self.w2-self.w1)-1), np.random.randint(1, (self.h1-self.h2)-1)])
+        r2 += shift
+
+        body = np.vstack((r1,r2))
+
+        # add redundancy check here
+
+        if self.halllength == 0:
+            self.spaces = body
+        else:
+            self.spaces = np.vstack((self.spaces, body))
