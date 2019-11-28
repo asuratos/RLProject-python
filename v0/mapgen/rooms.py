@@ -121,7 +121,6 @@ class RoomCross(Room):
         if np.random.rand() < self.hallwaychance:
             self.add_hallway()
         
-        # make a rectangle
         self.generate_body()
         self.boundary = self.get_bounds()
 
@@ -136,9 +135,7 @@ class RoomCross(Room):
         shift += np.array([-np.random.randint(1, (self.w2-self.w1)-1), np.random.randint(1, (self.h1-self.h2)-1)])
         r2 += shift
 
-        body = np.vstack((r1,r2))
-
-        # add redundancy check here
+        body = np.unique(np.vstack((r1,r2)), axis = 0)
 
         if self.halllength == 0:
             self.spaces = body
