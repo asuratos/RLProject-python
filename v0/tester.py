@@ -4,7 +4,7 @@ from mapgen.dig import Digger
 mapwidth = 70
 mapheight = 30
 
-a = Digger(mapwidth, mapheight, letters = False)
+a = Digger(mapwidth, mapheight, letters = False, floortype = 'default')
 a.dig_floor(40)
 
 terminal.open()

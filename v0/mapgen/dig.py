@@ -1,7 +1,7 @@
 import numpy as np
 
 # from map_objects.tile import Tile
-from mapgen.rooms import Room, RoomRect
+from mapgen.rooms import Room, RoomRect, RoomCross
 from graphs.graph import Graph
 
 class RoomWrapper:
@@ -27,9 +27,36 @@ class RoomWrapper:
     def boundary(self):
         return {key : bound[:,0] + (self.mapwidth * bound[:,1]) for (key,bound) in self._room.boundary.items()}
 
+class RoomPicker:
+    '''
+    Class that handles picking and generating rooms to send to the floor digger
+    '''
+    def __init__(self, width, profile = 'default'):
+        self.floortypes = {
+            'default': {
+                'rooms' : [RoomRect, RoomCross],
+                'p' : [0.5,0.5]
+            },
+            'allsquares':{
+                'rooms' : [RoomRect],
+                'p' : None
+            },
+            'allcrosses':{
+                'rooms' : [RoomCross],
+                'p' : None
+            }
+        }
+
+        self.profile = self.floortypes[profile]
+        self.floorwidth = width
+
+    def get_room(self, **params):
+        _room = np.random.choice(self.profile['rooms'], p = self.profile['p'])
+        return RoomWrapper(_room(**params), self.floorwidth)
+
 
 class Digger:
-    def __init__(self, width, height, letters = False):
+    def __init__(self, width, height, letters = False, floortype = 'default'):
         self.width = width
         self.height = height
         # self.tiles = self.initialize_tiles()
@@ -47,6 +74,8 @@ class Digger:
 
         self.roomgraph = Graph()
         self.roomcount = 1
+
+        self.roomgen = RoomPicker(self.width, floortype)
 
     def __str__(self):
         strlist = [''] * self.height
@@ -138,12 +167,12 @@ class Digger:
     def dig_floor(self, maxrooms):
 
         # make initial room
-        initroom = RoomWrapper(RoomRect(10,10, hallwaychance = 0, shift = 0),
+        initroom = RoomWrapper(RoomRect(10,10, hallwaychance = 0),
                             self.width)
         
         # place somewhere random on map
-        shift = np.random.randint(1, self.width - 10) + \
-                (np.random.randint(1, self.height - 10) * self.width)
+        shift = np.random.randint(self.width - 9) + \
+                (np.random.randint(self.height - 9) * self.width)
 
         # stamp onto temporary list of spots to dig out
         self.floor[initroom.spaces + shift] = self.roomcount
@@ -157,9 +186,9 @@ class Digger:
 
         for _ in range(maxrooms):
             # make a new room
-            newroom = RoomWrapper(RoomRect(np.random.randint(5,10), 
-                                np.random.randint(5,10), hallwaychance=0.75),
-                                self.width)
+            newroom = self.roomgen.get_room(w = np.random.randint(5,10),
+                                            h = np.random.randint(5,10),
+                                            hallwaychance = 0.5)
             newroom.transform()
             
             # np.random.shuffle(self.walls)

@@ -86,11 +86,10 @@ class Room:
     
 
 class RoomRect(Room):
-    def __init__(self, w, h, hallwaychance = 0.5, shift = True):
+    def __init__(self, w, h, hallwaychance = 0.5):
         super().__init__(hallwaychance)
         self.w = w
         self.h = h
-        self.shift = shift
 
         if np.random.rand() < self.hallwaychance:
             self.add_hallway()
@@ -102,9 +101,8 @@ class RoomRect(Room):
     def generate_body(self, w, h):
         body = np.array([[x,y] for x in range(w) for y in range(h)], dtype = int)
 
-        if self.shift:
-            shift = np.array([-np.random.randint(1, self.w-1), self.halllength+1])
-            body += shift
+        shift = np.array([-np.random.randint(1, self.w-1), self.halllength+1])
+        body += shift
         
         if self.halllength == 0:
             self.spaces = body
@@ -113,10 +111,12 @@ class RoomRect(Room):
         
         
 class RoomCross(Room):
-    def __init__(self, w1, h1, w2, h2, hallwaychance = 0.5):
+    def __init__(self, w, h, hallwaychance = 0.5):
         super().__init__(hallwaychance)
-        self.w1, self.w2 = w1, w2 
-        self.h1, self.h2 = h1, h2
+        self.w1, self.h1 = w, h
+
+        _warp = np.random.randint(2,5)
+        self.w2, self.h2 = w+_warp, h-_warp
 
         if np.random.rand() < self.hallwaychance:
             self.add_hallway()
@@ -132,7 +132,7 @@ class RoomCross(Room):
         
         r2 = np.array([[x,y] for x in range(self.w2) for y in range(self.h2)], dtype = int)
 
-        shift += np.array([-np.random.randint(1, (self.w2-self.w1)-1), np.random.randint(1, (self.h1-self.h2)-1)])
+        shift += np.array([-np.random.randint(1,self.w2-self.w1), np.random.randint(1,self.h1-self.h2)])
         r2 += shift
 
         body = np.unique(np.vstack((r1,r2)), axis = 0)
