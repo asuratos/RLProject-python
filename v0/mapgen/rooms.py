@@ -136,8 +136,8 @@ class RoomCross(Room):
         _dims = {
             'template' : ('min','max'),
             'small' : (3,5),
-            'medium' : (4,12),
-            'large' : (8,15)
+            'medium' : (4,8),
+            'large' : (8,12)
         }
         
         if size not in _dims:
@@ -148,7 +148,7 @@ class RoomCross(Room):
         
         r1 = np.array([[x,y] for x in range(_r1w) for y in range(_r1h)], dtype = int)
 
-        shift = np.array([-np.random.randint(1, _rw1-1), self.halllength+1])
+        shift = np.array([-np.random.randint(1, _r1w-1), self.halllength+1])
         r1 += shift
         
         _r2w = _r1w + np.random.randint(*_dims[size])
@@ -156,7 +156,7 @@ class RoomCross(Room):
         
         r2 = np.array([[x,y] for x in range(_r2w) for y in range(_r2h)], dtype = int)
 
-        shift += np.array([-np.random.randint(1, _r2w-_r1w), np.random.randint(1,_r1h-_r2h)])
+        shift += np.array([-np.random.randint(0, _r2w-_r1w), np.random.randint(0,_r1h-_r2h)])
         r2 += shift
 
         body = np.unique(np.vstack((r1,r2)), axis = 0)

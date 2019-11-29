@@ -37,7 +37,7 @@ class RoomPicker:
                 'rooms' : [RoomRect, RoomCross],
                 'roomsp' : [0.5,0.5],
                 'sizes' : ['small','medium','large'],
-                'sizesp' : [0.3, 0.5, 0.2]
+                'sizesp' : [0.45, 0.5, 0.05]
             },
             'allsquares':{
                 'rooms' : [RoomRect],
@@ -59,7 +59,7 @@ class RoomPicker:
     def get_room(self, **params):
         _room = np.random.choice(self.profile['rooms'], p = self.profile['roomsp'])
         _size = np.random.choice(self.profile['sizes'], p = self.profile['sizesp'])
-        return RoomWrapper(_room(_size, **params), self.floorwidth)
+        return RoomWrapper(_room(size = _size, **params), self.floorwidth)
 
 
 class Digger:
