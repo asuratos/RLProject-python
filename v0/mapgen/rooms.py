@@ -104,6 +104,9 @@ class RoomRect(Room):
             'medium' : (5,10),
             'large' : (10,15)
         }
+        
+        if size not in _dims:
+            size = 'medium'
        
         _roomw = np.random.randint(*_dims[size])
         _roomh = np.random.randint(*_dims[size])
@@ -137,8 +140,11 @@ class RoomCross(Room):
             'large' : (8,15)
         }
         
+        if size not in _dims:
+            size = 'medium'
+        
         _r1w = np.random.randint(*_dims[size])
-        _r1h = np.random.randint(*_dims[size]) + np.random.randint(*_dims[size])
+        _r1h = _r1w + np.random.randint(*_dims[size])
         
         r1 = np.array([[x,y] for x in range(_r1w) for y in range(_r1h)], dtype = int)
 
