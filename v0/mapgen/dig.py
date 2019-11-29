@@ -35,15 +35,21 @@ class RoomPicker:
         self.floortypes = {
             'default': {
                 'rooms' : [RoomRect, RoomCross],
-                'p' : [0.5,0.5]
+                'roomsp' : [0.5,0.5],
+                'sizes' : ['small','medium','large'],
+                'sizesp' : [0.3, 0.5, 0.2]
             },
             'allsquares':{
                 'rooms' : [RoomRect],
-                'p' : None
+                'roomsp' : None,
+                'sizes' : ['small','medium','large'],
+                'sizesp' : [0.3, 0.5, 0.2]
             },
             'allcrosses':{
                 'rooms' : [RoomCross],
-                'p' : None
+                'roomsp' : None,
+                'sizes' : ['small','medium','large'],
+                'sizesp' : [0.3, 0.5, 0.2]
             }
         }
 
@@ -51,8 +57,9 @@ class RoomPicker:
         self.floorwidth = width
 
     def get_room(self, **params):
-        _room = np.random.choice(self.profile['rooms'], p = self.profile['p'])
-        return RoomWrapper(_room(**params), self.floorwidth)
+        _room = np.random.choice(self.profile['rooms'], p = self.profile['roomsp'])
+        _size = np.random.choice(self.profile['sizes'], p = self.profile['sizesp'])
+        return RoomWrapper(_room(_size, **params), self.floorwidth)
 
 
 class Digger:
@@ -167,7 +174,7 @@ class Digger:
     def dig_floor(self, maxrooms):
 
         # make initial room
-        initroom = RoomWrapper(RoomRect(10,10, hallwaychance = 0),
+        initroom = RoomWrapper(RoomRect(size = 'medium', hallwaychance = 0),
                             self.width)
         
         # place somewhere random on map
@@ -186,9 +193,8 @@ class Digger:
 
         for _ in range(maxrooms):
             # make a new room
-            newroom = self.roomgen.get_room(w = np.random.randint(5,10),
-                                            h = np.random.randint(5,10),
-                                            hallwaychance = 0.5)
+            newroom = self.roomgen.get_room(hallwaychance = 0.5)
+            
             newroom.transform()
             
             # np.random.shuffle(self.walls)
