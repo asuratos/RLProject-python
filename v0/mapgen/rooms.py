@@ -3,7 +3,7 @@ import numpy as np
 # make hallway class maybe
 
 class Room:
-    def __init__(self, hallwaychance = 0.75):
+    def __init__(self, size = 'medium', hallwaychance = 0.75):
         self.spaces = np.array([[]], dtype = int)
         self.boundary = {
             '+y' : [] ,
@@ -11,6 +11,7 @@ class Room:
             '-y' : [] ,
             '-x' : [] 
         }
+        self.size = size
 
         self.facing_index = 0
         self.directions = ['+y', '+x', '-y', '-x']
@@ -86,22 +87,30 @@ class Room:
     
 
 class RoomRect(Room):
-    def __init__(self, w, h, hallwaychance = 0.5):
-        super().__init__(hallwaychance)
-        self.w = w
-        self.h = h
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         if np.random.rand() < self.hallwaychance:
             self.add_hallway()
         
         # make a rectangle
-        self.generate_body(self.w, self.h)
+        self.generate_body(self.size)
         self.boundary = self.get_bounds()
 
-    def generate_body(self, w, h):
-        body = np.array([[x,y] for x in range(w) for y in range(h)], dtype = int)
+    def generate_body(self, size):
+        _dims = {
+            'template' : ('min','max'),
+            'small' : (3,5),
+            'medium' : (5,10),
+            'large' : (10,15)
+        }
+       
+        _roomw = np.random.randint(*_dims[size])
+        _roomh = np.random.randint(*_dims[size])
+               
+        body = np.array([[x,y] for x in range(_roomw) for y in range(_roomh)], dtype = int)
 
-        shift = np.array([-np.random.randint(1, self.w-1), self.halllength+1])
+        shift = np.array([-np.random.randint(1, _roomw-1), self.halllength+1])
         body += shift
         
         if self.halllength == 0:
@@ -111,28 +120,37 @@ class RoomRect(Room):
         
         
 class RoomCross(Room):
-    def __init__(self, w, h, hallwaychance = 0.5):
-        super().__init__(hallwaychance)
-        self.w1, self.h1 = w, h
-
-        _warp = np.random.randint(2,5)
-        self.w2, self.h2 = w+_warp, h-_warp
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         if np.random.rand() < self.hallwaychance:
             self.add_hallway()
         
-        self.generate_body()
+        self.generate_body(self.size)
         self.boundary = self.get_bounds()
 
-    def generate_body(self):
-        r1 = np.array([[x,y] for x in range(self.w1) for y in range(self.h1)], dtype = int)
+    def generate_body(self, size):
+        _dims = {
+            'template' : ('min','max'),
+            'small' : (3,5),
+            'medium' : (4,12),
+            'large' : (8,15)
+        }
+        
+        _r1w = np.random.randint(*_dims[size])
+        _r1h = np.random.randint(*_dims[size]) + np.random.randint(*_dims[size])
+        
+        r1 = np.array([[x,y] for x in range(_r1w) for y in range(_r1h)], dtype = int)
 
-        shift = np.array([-np.random.randint(1, self.w1-1), self.halllength+1])
+        shift = np.array([-np.random.randint(1, _rw1-1), self.halllength+1])
         r1 += shift
         
-        r2 = np.array([[x,y] for x in range(self.w2) for y in range(self.h2)], dtype = int)
+        _r2w = _r1w + np.random.randint(*_dims[size])
+        _r2h = _r1h - np.random.randint(1, _r1h - 1)
+        
+        r2 = np.array([[x,y] for x in range(_r2w) for y in range(_r2h)], dtype = int)
 
-        shift += np.array([-np.random.randint(1,self.w2-self.w1), np.random.randint(1,self.h1-self.h2)])
+        shift += np.array([-np.random.randint(1, _r2w-_r1w), np.random.randint(1,_r1h-_r2h)])
         r2 += shift
 
         body = np.unique(np.vstack((r1,r2)), axis = 0)
