@@ -8,3 +8,4 @@ tests/__pycache__/
 tcod_tutorial/tester.py
 v0/mapgen/__pycache__/
 v0/graphs/__pycache__/
+v0/mapgen/ca/__pycache__/
