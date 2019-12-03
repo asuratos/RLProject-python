@@ -1,20 +1,18 @@
 import numpy as np
 
+from mapgen.ca.carules import RuleCave
+
 class CAMap:
     def __init__(self, w, h):
         self.rule = None
 
-        # can change this to distribution so it's not just a coin flip
-        self.spaces = np.random.randint(0,2,size = (w, h))
-        self.count_neighbors_VN()
-
+        self.spaces = np.random.choice([0,1],size = (w, h), p = [0.5,0.5])
 
     def find_blobs(self):
         pass
 
     def set_rule(self, rule):
-
-        pass
+        self.rule = rule
 
     def step(self):
         _nxt = self.rule(self.spaces)
