@@ -16,4 +16,4 @@ class CAMap:
 
     def step(self):
         _nxt = self.rule(self.spaces)
-        self.space = _nxt
+        self.spaces = _nxt
