@@ -6,8 +6,7 @@ from graphs.graph import Graph
 
 class RoomWrapper:
     '''
-    Wrapper that flattens room vector coordinates into 1d form used by the map
-    digger class
+    Wrapper that is currently not very useful. Should repurpose this later
     '''
     def __init__(self, room):
         self._room = room
@@ -18,9 +17,9 @@ class RoomWrapper:
         
         return getattr(self._room, attr)
 
-    @property
-    def spaces(self):
-        return self._room.spaces
+    def shifted(self, shift):
+        _shifted = self._room.spaces + shift
+        return _shifted[:,0], _shifted[:,1]
 
     @property
     def boundary(self):
@@ -86,10 +85,10 @@ class Digger:
         strlist = [''] * self.height
         for x in range(self.width):
             for y in range(self.height):
-                pt = x + self.width * y
-                if pt in self.doors:
+                pt = [x,y]
+                if (self.doors == pt).all(1).any():
                     strlist[y] += '+'
-                elif self.floor[pt] > 0:
+                elif self.floor[x, y] > 0:
                     if self.lettersflag:
                         strlist[y] += f'{chr(ord("a") - 1 + self.floor[pt])}'
                     else:
@@ -111,59 +110,60 @@ class Digger:
 
     def clear_check(self, space1, space2):
         # check boundaries
-        if (space1 // self.width == 0).any() or (space1 % self.width == 0).any() or  \
-           ((space1+1) % self.width == 0).any() or (space1 // self.width == self.height -1).any():
+        if (0 in space1) or (space1[:,0] >= self.width-1).any() or \
+           (space1[:,1] >= self.height-1).any() or (space1 < 0).any():
             return False
         
         # narrow down the search
-        s1miny = np.amin(space1 // self.width)
-        s1maxy = np.amax(space1 // self.width)
-        s1minx = np.amin(space1 % self.width)
-        s1maxx = np.amax(space1 % self.width)
+        s1minx, s1miny = np.amin(space1, axis = 0)
+        s1maxx, s1maxy = np.amax(space1, axis = 0)
         
         neighborhood = space2[np.logical_and.reduce(np.stack((
-            space2 // self.width >= s1miny,
-            space2 // self.width <= s1maxy,
-            space2 % self.width >= s1minx,
-            space2 % self.width <= s1maxx
+            space2[:,1] >= s1miny,
+            space2[:,1] <= s1maxy,
+            space2[:,0] >= s1minx,
+            space2[:,0] <= s1maxx
         )))]
 
-        if np.intersect1d(space1, neighborhood).size != 0:
-            return False
+        for pt in space1:
+            if (neighborhood[:] == pt).all(1).any():
+                return False
         
         return True
 
     def place_door(self,pt):
         if self.doors is not None:
-            self.doors = np.append(self.doors, pt)
+            self.doors = np.vstack((self.doors, pt))
         else:
             self.doors = pt
 
     def attach_room(self, room, attach_pts):
 
         for pt in attach_pts:
-            if (pt // self.width == 0) or ((pt+1) // self.width == self.height -1) or\
-                (pt % self.width == 0) or ((pt+1) % self.width == 0):
+            # border check
+            if (0 in pt[:]) or (pt[0] == self.width-1) or \
+               (pt[1] == self.height - 1):
                 continue
             
-            _invalidpts = np.append(self.allbounds, np.argwhere(self.floor > 0))
+            #this isn't correct
+            _invalidpts = np.vstack((self.allbounds, np.argwhere(self.floor > 0)))
             
             if self.clear_check(room.spaces + pt, _invalidpts):
 
                 self.roomcount += 1
                 self.roomgraph.add_node(self.roomcount)
-                self.roomgraph.add_edge(self.roomcount, self.connections[int(pt)])
+                self.roomgraph.add_edge(self.roomcount, self.connections[pt[0], pt[1]])
 
-                self.floor[room.spaces + pt] = self.roomcount 
+                self.floor[room.shifted(pt)] = self.roomcount 
 
                 self.place_door(pt)
 
                 for key in room.boundary:
-                    self.walls[key] = np.hstack((self.walls[key], 
+                    self.walls[key] = np.vstack((self.walls[key], 
                                                  room.boundary[key] + pt))
                     self.connections[room.boundary[key] + pt] = self.roomcount
 
-                self.allbounds = np.hstack([bound for bound in self.walls.values()])
+                self.allbounds = np.vstack([bound for bound in self.walls.values()])
                 return True
             
         return False
@@ -178,11 +178,11 @@ class Digger:
         shift = np.random.randint(min(self.width, self.height) - 9, size = 2)
 
         # stamp onto temporary list of spots to dig out
-        self.floor[initroom.spaces + shift] = self.roomcount
+        self.floor[initroom.shifted(shift)] = self.roomcount
         
         for key in self.walls:
             self.walls[key] = initroom.boundary[key] + shift
-            self.connections[self.walls[key]] = self.roomcount
+            self.connections[self.walls[key][:,0],self.walls[key][:,1]] = self.roomcount
 
         self.allbounds = np.vstack([bound for bound in self.walls.values()])
         self.roomgraph.add_node(self.roomcount)
