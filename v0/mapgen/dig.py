@@ -9,9 +9,8 @@ class RoomWrapper:
     Wrapper that flattens room vector coordinates into 1d form used by the map
     digger class
     '''
-    def __init__(self, room, mapwidth):
+    def __init__(self, room):
         self._room = room
-        self.mapwidth = mapwidth
 
     def __getattr__(self,attr):
         if attr in self.__dict__:
@@ -21,17 +20,17 @@ class RoomWrapper:
 
     @property
     def spaces(self):
-        return self._room.spaces[:,0] + (self.mapwidth * self._room.spaces[:,1])
+        return self._room.spaces
 
     @property
     def boundary(self):
-        return {key : bound[:,0] + (self.mapwidth * bound[:,1]) for (key,bound) in self._room.boundary.items()}
+        return self._room.boundary
 
 class RoomPicker:
     '''
     Class that handles picking and generating rooms to send to the floor digger
     '''
-    def __init__(self, width, profile = 'default'):
+    def __init__(self, profile = 'default'):
         self.floortypes = {
             'default': {
                 'rooms' : [RoomRect, RoomCross],
@@ -54,12 +53,11 @@ class RoomPicker:
         }
 
         self.profile = self.floortypes[profile]
-        self.floorwidth = width
 
     def get_room(self, **params):
         _room = np.random.choice(self.profile['rooms'], p = self.profile['roomsp'])
         _size = np.random.choice(self.profile['sizes'], p = self.profile['sizesp'])
-        return RoomWrapper(_room(size = _size, **params), self.floorwidth)
+        return RoomWrapper(_room(size = _size, **params))
 
 
 class Digger:
@@ -69,9 +67,9 @@ class Digger:
         # self.tiles = self.initialize_tiles()
         self.lettersflag = letters # this flag shouldn't be in this class
 
-        self.floor = np.zeros((self.width * self.height), dtype = int)
+        self.floor = np.zeros((self.width, self.height), dtype = int)
         self.doors = None
-        self.connections = np.zeros((self.width * self.height), dtype = int)
+        self.connections = np.zeros((self.width, self.height), dtype = int)
         self.walls = {
             '+y' : [] ,
             '+x' : [] ,
@@ -82,7 +80,7 @@ class Digger:
         self.roomgraph = Graph()
         self.roomcount = 1
 
-        self.roomgen = RoomPicker(self.width, floortype)
+        self.roomgen = RoomPicker(floortype)
 
     def __str__(self):
         strlist = [''] * self.height
@@ -174,12 +172,10 @@ class Digger:
     def dig_floor(self, maxrooms):
 
         # make initial room
-        initroom = RoomWrapper(RoomRect(size = 'medium', hallwaychance = 0),
-                            self.width)
+        initroom = RoomWrapper(RoomRect(size = 'medium', hallwaychance = 0))
         
         # place somewhere random on map
-        shift = np.random.randint(self.width - 9) + \
-                (np.random.randint(self.height - 9) * self.width)
+        shift = np.random.randint(min(self.width, self.height) - 9, size = 2)
 
         # stamp onto temporary list of spots to dig out
         self.floor[initroom.spaces + shift] = self.roomcount
