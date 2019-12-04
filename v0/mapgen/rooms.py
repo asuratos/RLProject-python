@@ -3,14 +3,17 @@ import numpy as np
 # make hallway class maybe
 
 class Room:
+
     def __init__(self, size = 'medium', hallwaychance = 0.75):
         self.spaces = np.array([[]], dtype = int)
+
         self.boundary = {
             '+y' : [] ,
             '+x' : [] ,
             '-y' : [] ,
             '-x' : [] 
         }
+
         self.size = size
 
         self.facing_index = 0
@@ -21,6 +24,7 @@ class Room:
 
         self.transforms = [None,
                            self.rotate_left,
+
                            self.rotate_right,
                            self.mirror_horizontal,        
                            self.mirror_vertical]
@@ -28,6 +32,7 @@ class Room:
     @property
     def facing(self):
         return self.directions[self.facing_index]
+
 
     def get_bounds(self):
         
@@ -56,7 +61,7 @@ class Room:
         _choice = np.random.choice(self.transforms)
         if _choice:
             _choice()
-        
+
     def mirror_horizontal(self):
         self.spaces = self.spaces * [-1, 1]
 
@@ -87,8 +92,10 @@ class Room:
     
 
 class RoomRect(Room):
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
 
         if np.random.rand() < self.hallwaychance:
             self.add_hallway()

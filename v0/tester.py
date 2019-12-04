@@ -19,3 +19,4 @@ while terminal.read() != terminal.TK_CLOSE:
     pass
  
 terminal.close()
+
