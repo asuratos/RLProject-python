@@ -90,7 +90,7 @@ class Digger:
                     strlist[y] += '+'
                 elif self.floor[x, y] > 0:
                     if self.lettersflag:
-                        strlist[y] += f'{chr(ord("a") - 1 + self.floor[pt])}'
+                        strlist[y] += f'{chr(ord("a") - 1 + self.floor[x,y])}'
                     else:
                         strlist[y] += '.'
                 else:
@@ -110,8 +110,8 @@ class Digger:
 
     def clear_check(self, space1, space2):
         # check boundaries
-        if (0 in space1) or (space1[:,0] >= self.width-1).any() or \
-           (space1[:,1] >= self.height-1).any() or (space1 < 0).any():
+        if (space1[:,0] >= self.width-1).any() or \
+           (space1[:,1] >= self.height-1).any() or (space1 <= 0).any():
             return False
         
         # narrow down the search
@@ -141,8 +141,8 @@ class Digger:
 
         for pt in attach_pts:
             # border check
-            if (0 in pt[:]) or (pt[0] == self.width-1) or \
-               (pt[1] == self.height - 1):
+            if (pt <= 0).any() or (pt[0] >= self.width-1) or \
+               (pt[1] >= self.height - 1):
                 continue
             
             #this isn't correct
