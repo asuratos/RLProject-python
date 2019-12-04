@@ -113,8 +113,9 @@ class RoomRect(Room):
                
         body = np.array([[x,y] for x in range(_roomw) for y in range(_roomh)], dtype = int)
 
-        shift = np.array([-np.random.randint(1, _roomw-1), self.halllength+1])
-        body += shift
+        if self.halllength > 0:
+            shift = np.array([-np.random.randint(1, _roomw-1), self.halllength+1])
+            body += shift
         
         if self.halllength == 0:
             self.spaces = body
