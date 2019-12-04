@@ -5,3 +5,7 @@ tcod_tutorial/__pycache__/
 tcod_tutorial/map_objects/__pycache__/
 tcod_tutorial/components/__pycache__/
 tests/__pycache__/
+tcod_tutorial/tester.py
+v0/mapgen/__pycache__/
+v0/graphs/__pycache__/
+v0/mapgen/ca/__pycache__/

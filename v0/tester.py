@@ -1,7 +1,22 @@
-from map_objects.map import Map
+from bearlibterminal import terminal
+from mapgen.dig import Digger
 
-a = Map(70,35)
-a.make_map(50)
-print(a)
-print(a.dugout.size/2)
-print(a.roomcount)
+mapwidth = 70
+mapheight = 30
+
+a = Digger(mapwidth, mapheight, letters = False, floortype = 'default')
+a.dig_floor(50)
+
+terminal.open()
+terminal.set(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
+terminal.printf(0, 0, str(a))
+terminal.printf(mapwidth+1, 15, 'Side pane here!')
+terminal.refresh()
+
+print(a.roomgraph)
+ 
+while terminal.read() != terminal.TK_CLOSE:
+    pass
+ 
+terminal.close()
+
