@@ -4,8 +4,8 @@ from mapgen.dig import Digger
 mapwidth = 70
 mapheight = 30
 
-a = Digger(mapwidth, mapheight, letters = True, floortype = 'default')
-a.dig_floor(50)
+a = Digger(mapwidth, mapheight, letters = False, floortype = 'default')
+a.dig_floor(99)
 
 terminal.open()
 terminal.set(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')

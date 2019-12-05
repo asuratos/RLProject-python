@@ -68,13 +68,10 @@ class Digger:
 
         self.floor = np.zeros((self.width, self.height), dtype = int)
         self.doors = None
+
         self.connections = np.zeros((self.width, self.height), dtype = int)
-        self.walls = {
-            '+y' : [] ,
-            '+x' : [] ,
-            '-y' : [] ,
-            '-x' : [] 
-        }
+        self.walls = np.empty_like(self.floor, dtype = '<U2')
+        self.walls[:] = 'no'
 
         self.roomgraph = Graph()
         self.roomcount = 1
@@ -146,7 +143,7 @@ class Digger:
                 continue
             
             #this isn't correct
-            _invalidpts = np.vstack((self.allbounds, np.argwhere(self.floor > 0)))
+            _invalidpts = np.vstack((np.argwhere(self.walls != 'no'), np.argwhere(self.floor > 0)))
             
             if self.clear_check(room.spaces + pt, _invalidpts):
 
@@ -159,11 +156,10 @@ class Digger:
                 self.place_door(pt)
 
                 for key in room.boundary:
-                    self.walls[key] = np.vstack((self.walls[key], 
-                                                 room.boundary[key] + pt))
-                    self.connections[room.boundary[key] + pt] = self.roomcount
+                    _address = room.boundary[key] + pt
+                    self.walls[_address[:,0], _address[:,1]] = key
+                    self.connections[np.nonzero(self.walls == key)] = self.roomcount
 
-                self.allbounds = np.vstack([bound for bound in self.walls.values()])
                 return True
             
         return False
@@ -180,11 +176,11 @@ class Digger:
         # stamp onto temporary list of spots to dig out
         self.floor[initroom.shifted(shift)] = self.roomcount
         
-        for key in self.walls:
-            self.walls[key] = initroom.boundary[key] + shift
-            self.connections[self.walls[key][:,0],self.walls[key][:,1]] = self.roomcount
+        for key in initroom.boundary:
+            _address = initroom.boundary[key] + shift
+            self.walls[_address[:,0], _address[:,1]] = key
+            self.connections[np.nonzero(self.walls == key)] = self.roomcount
 
-        self.allbounds = np.vstack([bound for bound in self.walls.values()])
         self.roomgraph.add_node(self.roomcount)
 
         for _ in range(maxrooms):
@@ -196,13 +192,13 @@ class Digger:
             # np.random.shuffle(self.walls)
             # find place for newroom
             for _ in range(2):
-                if self.attach_room(newroom, self.walls[newroom.facing]):
+                if self.attach_room(newroom, np.argwhere(self.walls == newroom.facing)):
                     break
                 else:
                     newroom.transform()
 
             
-            if np.count_nonzero(self.floor) / (self.height*self.width) > 0.6:
+            if np.count_nonzero(self.floor) / (self.height*self.width) > 0.75:
                 break
 
         # print('finish')
