@@ -115,7 +115,7 @@ class Digger:
         s1minx, s1miny = np.amin(space1, axis = 0)
         s1maxx, s1maxy = np.amax(space1, axis = 0)
         
-        neigborhood = space2[(space2[:,1] >= s1miny) & 
+        neighborhood = space2[(space2[:,1] >= s1miny) & 
                              (space2[:,1] <= s1maxy) &
                              (space2[:,0] >= s1minx) &
                              (space2[:,0] <= s1maxx)]
