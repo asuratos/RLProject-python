@@ -19,7 +19,7 @@ class RoomWrapper:
 
     def shifted(self, shift):
         _shifted = self._room.spaces + shift
-        return _shifted[:,0], _shifted[:,1]
+        return tuple(_shifted.T)
 
     @property
     def boundary(self):
@@ -115,12 +115,10 @@ class Digger:
         s1minx, s1miny = np.amin(space1, axis = 0)
         s1maxx, s1maxy = np.amax(space1, axis = 0)
         
-        neighborhood = space2[np.logical_and.reduce(np.stack((
-            space2[:,1] >= s1miny,
-            space2[:,1] <= s1maxy,
-            space2[:,0] >= s1minx,
-            space2[:,0] <= s1maxx
-        )))]
+        neigborhood = space2[(space2[:,1] >= s1miny) & 
+                             (space2[:,1] <= s1maxy) &
+                             (space2[:,0] >= s1minx) &
+                             (space2[:,0] <= s1maxx)]
 
         for pt in space1:
             if (neighborhood[:] == pt).all(1).any():
@@ -177,8 +175,8 @@ class Digger:
         self.floor[initroom.shifted(shift)] = self.roomcount
         
         for key in initroom.boundary:
-            _address = initroom.boundary[key] + shift
-            self.walls[_address[:,0], _address[:,1]] = key
+            _address = (initroom.boundary[key] + shift).T
+            self.walls[tuple(_address)] = key
             self.connections[np.nonzero(self.walls == key)] = self.roomcount
 
         self.roomgraph.add_node(self.roomcount)
