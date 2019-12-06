@@ -162,9 +162,7 @@ class Digger:
                                        constant_values = self.roomcount)
                     
                     self.connections = np.vstack((self.connections, _newwalls))
-
-                # self.connections[np.nonzero(self.walls == key)] = self.roomcount
-
+                    
                 return True
             
         return False
@@ -176,7 +174,7 @@ class Digger:
         initroom = RoomWrapper(RoomRect(size = 'medium', hallwaychance = 0))
         
         # place somewhere random on map
-        shift = np.random.randint(min(self.width, self.height) - 9, size = 2)
+        shift = np.random.randint(1, min(self.width, self.height) - 9, size = 2)
 
         # stamp onto temporary list of spots to dig out
         self.floor[initroom.shifted(shift)] = self.roomcount
@@ -184,7 +182,6 @@ class Digger:
         for key in initroom.boundary:
             _address = (initroom.boundary[key] + shift).T
             self.walls[tuple(_address)] = key
-            # self.connections[np.nonzero(self.walls == key)] = self.roomcount
 
         _walls = np.argwhere(self.walls != 'no')
         self.connections = np.pad(_walls, (0,1), constant_values = 1)
