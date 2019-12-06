@@ -147,7 +147,8 @@ class Digger:
 
                 self.roomcount += 1
                 self.roomgraph.add_node(self.roomcount)
-                self.roomgraph.add_edge(self.roomcount, self.connections[pt[0], pt[1]])
+                self.roomgraph.add_edge(self.roomcount, 
+                                        self.connections[(self.connections[:,:2] == pt).all(1)][0,-1])
 
                 self.floor[room.shifted(pt)] = self.roomcount 
 
@@ -156,7 +157,13 @@ class Digger:
                 for key in room.boundary:
                     _address = room.boundary[key] + pt
                     self.walls[_address[:,0], _address[:,1]] = key
-                    self.connections[np.nonzero(self.walls == key)] = self.roomcount
+
+                    _newwalls = np.pad(_address, (0,1), 
+                                       constant_values = self.roomcount)
+                    
+                    self.connections = np.vstack((self.connections, _newwalls))
+
+                # self.connections[np.nonzero(self.walls == key)] = self.roomcount
 
                 return True
             
@@ -177,7 +184,10 @@ class Digger:
         for key in initroom.boundary:
             _address = (initroom.boundary[key] + shift).T
             self.walls[tuple(_address)] = key
-            self.connections[np.nonzero(self.walls == key)] = self.roomcount
+            # self.connections[np.nonzero(self.walls == key)] = self.roomcount
+
+        _walls = np.argwhere(self.walls != 'no')
+        self.connections = np.pad(_walls, (0,1), constant_values = 1)
 
         self.roomgraph.add_node(self.roomcount)
 
