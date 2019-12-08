@@ -154,14 +154,21 @@ class Digger:
 
                 self.place_door(pt)
 
+                _newwalls = None
                 for key in room.boundary:
                     _address = room.boundary[key] + pt
                     self.walls[_address[:,0], _address[:,1]] = key
 
-                    _newwalls = np.pad(_address, (0,1), 
-                                       constant_values = self.roomcount)
+                    if _newwalls is not None:
+                        _newwalls = np.vstack((_newwalls, _address))
+                    else:
+                        _newwalls = _address
                     
-                    self.connections = np.vstack((self.connections, _newwalls))
+                _newwalls = np.pad(_newwalls, (0,1), 
+                                constant_values = self.roomcount)
+
+                self.connections = np.vstack((self.connections, 
+                                              np.unique(_newwalls, axis = 0)))
                     
                 return True
             
@@ -180,8 +187,8 @@ class Digger:
         self.floor[initroom.shifted(shift)] = self.roomcount
         
         for key in initroom.boundary:
-            _address = (initroom.boundary[key] + shift).T
-            self.walls[tuple(_address)] = key
+            _address = initroom.boundary[key] + shift
+            self.walls[_address[:,0], _address[:,1]] = key
 
         _walls = np.argwhere(self.walls != 'no')
         self.connections = np.pad(_walls, (0,1), constant_values = 1)
@@ -206,7 +213,7 @@ class Digger:
             if np.count_nonzero(self.floor) / (self.height*self.width) > 0.75:
                 break
 
-        # print('finish')
+        print('finish')
 
 if __name__ == '__main__':
     a = Digger(50,30)

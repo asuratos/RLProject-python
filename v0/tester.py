@@ -5,7 +5,7 @@ mapwidth = 70
 mapheight = 30
 
 a = Digger(mapwidth, mapheight, letters = True, floortype = 'default')
-a.dig_floor(99)
+a.dig_floor(75)
 
 terminal.open()
 terminal.set(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
