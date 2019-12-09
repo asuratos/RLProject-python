@@ -2,11 +2,12 @@ import numpy as np
 
 # from map_objects.tile import Tile
 from mapgen.rooms import Room, RoomRect, RoomCross
+from mapgen.ca.ca import CAMap, Cave
 from graphs.graph import Graph
 
 class RoomWrapper:
     '''
-    Wrapper that is currently not very useful. Should repurpose this later
+    Interface class for rooms
     '''
     def __init__(self, room):
         self._room = room
@@ -19,17 +20,14 @@ class RoomWrapper:
 
     def shifted(self, shift):
         _shifted = self._room.spaces + shift
-        return tuple(_shifted.T)
-
-    @property
-    def boundary(self):
-        return self._room.boundary
+        return _shifted[:,0], _shifted[:,1]
 
 class RoomPicker:
     '''
     Class that handles picking and generating rooms to send to the floor digger
     '''
-    def __init__(self, profile = 'default'):
+
+    def __init__(self, w, h, profile = 'default'):
         self.floortypes = {
             'default': {
                 'rooms' : [RoomRect, RoomCross],
@@ -52,6 +50,9 @@ class RoomPicker:
         }
 
         self.profile = self.floortypes[profile]
+        if Cave in self.profile['rooms']:
+            _CAMap = CAMap(w,h) 
+            
 
     def get_room(self, **params):
         _room = np.random.choice(self.profile['rooms'], p = self.profile['roomsp'])
@@ -76,7 +77,7 @@ class Digger:
         self.roomgraph = Graph()
         self.roomcount = 1
 
-        self.roomgen = RoomPicker(floortype)
+        self.roomgen = RoomPicker(width, height, floortype)
 
     def __str__(self):
         strlist = [''] * self.height
