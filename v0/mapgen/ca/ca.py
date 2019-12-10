@@ -10,26 +10,30 @@ def _manhattandistance(pt, vectors):
     return np.sum(_diffs, axis = -1)
 
 
-def findrooms(map):
+def labelrooms(map):
     '''
-    Takes 2d array of 0s and 1s, returns list of lists,
-    where each element is a list of connected points
+    Takes 2d array of 0s and 1s, returns labelled 2darray
+    and count of number of rooms
     '''
     
     _spaces = np.argwhere(map == 1) #Nx2 np array of positions of 1s
-    np.random.shuffle(_spaces)
+    _labelled = np.zeros_like(map)
     
     _rooms = []
-    _unvisited = _spaces.copy() 
+    _unvisited = _spaces.tolist()
+    _visited = set()
+    _frontier = []
 
-    # pick point in _spaces
-    for pt in _spaces:
-        # find all points directly connected to that
-
-        # repeat until no more neighbors
-        # if there are still points in spaces, find next room
+    # initialize starting point
+    _current = np.random.choice(_unvisited)
+    # just use a queue object dammit
+    while len(_unvisited) > 0:
+        # get valid neighbors of current point
         
-        # just implement skimage? or scipy.ndimage.label, unless I can figure out how to vectorize
+        # for each neighbor
+            # if neighbor in _unvisited, add to _frontier, remove from _unvisited
+            # if neighbor in _visited, discard
+
         pass
 
 
