@@ -24,13 +24,14 @@ def floodfill(graph, start):
     frontier = Queue()
     frontier.put(start)
     
-    visited = []
+    visited = {}
+    visited[start] = True
     
     while not frontier.empty:
         current = frontier.get()
         for next in graph.get_neighbors(current):
             if next not in visited:
                 frontier.put(next)
-                visited.append(next)
+                visited[next] = True
                 
     return visited
