@@ -18,20 +18,21 @@ def floodfill(graph, start):
     '''
     From a graph and a point in the graph, 
     finds the locations on the graph that are accessible from 
-    the starting point
+    the starting point, and gives the distance in steps from the
+    start
     '''
     
     frontier = Queue()
     frontier.put(start)
     
-    visited = {}
-    visited[start] = True
+    distance = {}
+    distance[start] = 0
     
     while not frontier.empty:
         current = frontier.get()
         for next in graph.get_neighbors(current):
-            if next not in visited:
+            if next not in distance:
                 frontier.put(next)
-                visited[next] = True
+                distance[next] = 1 + distace[current]
                 
     return visited
