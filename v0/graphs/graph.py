@@ -1,4 +1,7 @@
 class Graph:
+    '''
+    General graph class for pathfinding, etc
+    '''
     def __init__(self):
         self.nodes = []
         self.edges = {}
@@ -32,7 +35,7 @@ class GridGraph:
     Initialized with load_nodes_fromlist, which takes a Nx2
     list of positions of walkable tiles.
     get_neighbors returns a list of tuples, as the pathfinding algotithms
-    need immutable types to use as 
+    need immutable types to use as dict keys
     '''
     def __init__(self):
         self.nodes = []
