@@ -1,7 +1,7 @@
 import numpy as np
 
 # from map_objects.tile import Tile
-from mapgen.rooms import Room, RoomRect, RoomCross
+from mapgen.rooms import Room, RoomRect, RoomCross, RoomCircle
 from mapgen.ca.ca import CAMap, Cave
 from graphs.graph import Graph
 
@@ -30,10 +30,10 @@ class RoomPicker:
     def __init__(self, w, h, profile = 'default'):
         self.floortypes = {
             'default': {
-                'rooms' : [RoomRect, RoomCross],
-                'roomsp' : [0.5,0.5],
+                'rooms' : [RoomRect, RoomCross, RoomCircle],
+                'roomsp' : [0.3,0.4,0.3],
                 'sizes' : ['small','medium','large'],
-                'sizesp' : [0.45, 0.5, 0.05]
+                'sizesp' : [0.55, 0.4, 0.05]
             },
             'allsquares':{
                 'rooms' : [RoomRect],

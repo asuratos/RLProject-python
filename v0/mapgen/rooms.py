@@ -24,7 +24,6 @@ class Room:
 
         self.transforms = [None,
                            self.rotate_left,
-
                            self.rotate_right,
                            self.mirror_horizontal,        
                            self.mirror_vertical]
@@ -92,7 +91,6 @@ class Room:
     
 
 class RoomRect(Room):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -118,10 +116,12 @@ class RoomRect(Room):
         _roomw = np.random.randint(*_dims[size])
         _roomh = np.random.randint(*_dims[size])
                
-        body = np.array([[x,y] for x in range(_roomw) for y in range(_roomh)], dtype = int)
+        body = np.array([[x,y] for x in range(_roomw) for y in range(_roomh)], 
+                        dtype = int)
 
         if self.halllength > 0:
-            shift = np.array([-np.random.randint(1, _roomw-1), self.halllength+1])
+            shift = np.array([-np.random.randint(1, _roomw-1), 
+                              self.halllength+1])
             body += shift
         
         if self.halllength == 0:
@@ -154,7 +154,8 @@ class RoomCross(Room):
         _r1w = np.random.randint(*_dims[size])
         _r1h = _r1w + np.random.randint(*_dims[size])
         
-        r1 = np.array([[x,y] for x in range(_r1w) for y in range(_r1h)], dtype = int)
+        r1 = np.array([[x,y] for x in range(_r1w) for y in range(_r1h)], 
+                      dtype = int)
 
         shift = np.array([-np.random.randint(1, _r1w-1), self.halllength+1])
         r1 += shift
@@ -162,9 +163,11 @@ class RoomCross(Room):
         _r2w = _r1w + np.random.randint(*_dims[size])
         _r2h = _r1h - np.random.randint(1, _r1h - 1)
         
-        r2 = np.array([[x,y] for x in range(_r2w) for y in range(_r2h)], dtype = int)
+        r2 = np.array([[x,y] for x in range(_r2w) for y in range(_r2h)], 
+                      dtype = int)
 
-        shift += np.array([-np.random.randint(0, _r2w-_r1w), np.random.randint(0,_r1h-_r2h)])
+        shift += np.array([-np.random.randint(0, _r2w-_r1w), 
+                           np.random.randint(0,_r1h-_r2h)])
         r2 += shift
 
         body = np.unique(np.vstack((r1,r2)), axis = 0)
@@ -173,3 +176,46 @@ class RoomCross(Room):
             self.spaces = body
         else:
             self.spaces = np.vstack((self.spaces, body))
+
+class RoomCircle(Room):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.transforms = [None,
+                           self.rotate_left,
+                           self.rotate_right]
+
+        if np.random.rand() < self.hallwaychance:
+            self.add_hallway()
+        
+        self.generate_body(self.size)
+        self.boundary = self.get_bounds()
+    
+    def _incircle(self, x, y, r):
+        return x*x + y*y < r*r
+        
+
+    def generate_body(self,size):
+        _dims = {
+            'template' : ('minradius', 'maxradius'),
+            'small' : (3,5),
+            'medium' : (5,7),
+            'large' : (7,9)
+        }
+        
+        if size not in _dims:
+            size = 'medium'
+        
+        _r = np.random.randint(*_dims[size])
+        
+        _body = []
+        for _y in range(-_r,_r + 1):
+            for _x in range(-_r,_r + 1):
+                if self._incircle(_x, _y, _r + 0.5):
+                    _body.append([_x,_y])
+
+        _body = np.array(_body) + [0, self.halllength + int(_r) + 1]
+        
+        if self.halllength == 0:
+            self.spaces = _body
+        else:
+            self.spaces = np.vstack((self.spaces, _body))
