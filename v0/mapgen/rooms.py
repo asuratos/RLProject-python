@@ -144,8 +144,8 @@ class RoomCross(Room):
         _dims = {
             'template' : ('min','max'),
             'small' : (3,5),
-            'medium' : (4,8),
-            'large' : (8,12)
+            'medium' : (4,6),
+            'large' : (6,9)
         }
         
         if size not in _dims:
@@ -197,9 +197,9 @@ class RoomCircle(Room):
     def generate_body(self,size):
         _dims = {
             'template' : ('minradius', 'maxradius'),
-            'small' : (3,5),
-            'medium' : (5,7),
-            'large' : (7,9)
+            'small' : (2,4),
+            'medium' : (4,6),
+            'large' : (6,8)
         }
         
         if size not in _dims:

@@ -31,12 +31,18 @@ class RoomPicker:
         self.floortypes = {
             'default': {
                 'rooms' : [RoomRect, RoomCross, RoomCircle],
-                'roomsp' : [0.3,0.4,0.3],
+                'roomsp' : [0.35,0.45,0.2],
                 'sizes' : ['small','medium','large'],
                 'sizesp' : [0.55, 0.4, 0.05]
             },
             'allsquares':{
                 'rooms' : [RoomRect],
+                'roomsp' : None,
+                'sizes' : ['small','medium','large'],
+                'sizesp' : [0.3, 0.5, 0.2]
+            },
+            'allcircles':{
+                'rooms' : [RoomCircle],
                 'roomsp' : None,
                 'sizes' : ['small','medium','large'],
                 'sizesp' : [0.3, 0.5, 0.2]
