@@ -1,4 +1,7 @@
 class Graph:
+    '''
+    General graph class for pathfinding, etc
+    '''
     def __init__(self):
         self.nodes = []
         self.edges = {}
@@ -25,3 +28,28 @@ class Graph:
             return self.edges[id]
         return None
 
+class GridGraph:
+    '''
+    Graph-like class that handles the special case of the
+    square grid (e.g floor tiles)
+    Initialized with load_nodes_fromlist, which takes a Nx2
+    list of positions of walkable tiles.
+    get_neighbors returns a list of tuples, as the pathfinding algotithms
+    need immutable types to use as dict keys
+    '''
+    def __init__(self):
+        self.nodes = []
+        
+    def add_node(self, id: list):
+        self.nodes.append(id)
+    
+    def load_nodes_fromlist(self, vec: list):
+        self.nodes = vec
+    
+    def get_neighbors(self, id):
+        x, y = id
+        neighbors = [[x + 1, y],
+                     [x - 1, y],
+                     [x, y + 1],
+                     [x, y - 1]]
+        return [tuple(pt) for pt in neighbors if pt not in self.nodes]
