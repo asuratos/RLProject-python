@@ -2,7 +2,7 @@ from collections import deque
 
 class Queue:
     def __init__(self):
-        self.elements = collections.deque()
+        self.elements = deque()
     
     @property
     def empty(self):
@@ -33,6 +33,6 @@ def floodfill(graph, start):
         for next in graph.get_neighbors(current):
             if next not in distance:
                 frontier.put(next)
-                distance[next] = 1 + distace[current]
+                distance[next] = 1 + distance[current]
                 
-    return visited
+    return distance
