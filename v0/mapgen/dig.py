@@ -3,7 +3,7 @@ import numpy as np
 # from map_objects.tile import Tile
 from mapgen.rooms import Room, RoomRect, RoomCross, RoomCircle
 from mapgen.ca.ca import CAMap, Cave
-from graphs.graph import Graph
+from graphs.graph import Graph, GridGraph
 
 class RoomWrapper:
     '''
@@ -73,6 +73,7 @@ class Digger:
         # self.tiles = self.initialize_tiles()
         self.lettersflag = letters # this flag shouldn't be in this class
 
+        self.floorgraph = GridGraph()
         self.floor = np.zeros((self.width, self.height), dtype = int)
         self.doors = None
 
@@ -138,6 +139,8 @@ class Digger:
             self.doors = np.vstack((self.doors, pt))
         else:
             self.doors = pt
+        
+        self.floorgraph.add_node(pt.tolist())
 
     def attach_room(self, room, attach_pts):
 
@@ -156,6 +159,8 @@ class Digger:
                 self.roomgraph.add_node(self.roomcount)
                 self.roomgraph.add_edge(self.roomcount, 
                                         self.connections[(self.connections[:,:2] == pt).all(1)][0,-1])
+
+                self.floorgraph.add_nodes((room.spaces + pt).tolist())
 
                 self.floor[room.shifted(pt)] = self.roomcount 
 
@@ -192,6 +197,7 @@ class Digger:
 
         # stamp onto temporary list of spots to dig out
         self.floor[initroom.shifted(shift)] = self.roomcount
+        self.floorgraph.set_nodes_fromlist = np.argwhere(self.floor != 1).tolist()
         
         for key in initroom.boundary:
             _address = initroom.boundary[key] + shift

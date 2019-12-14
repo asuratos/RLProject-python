@@ -42,8 +42,11 @@ class GridGraph:
         
     def add_node(self, id: list):
         self.nodes.append(id)
+
+    def add_nodes(self, ids: list):
+        self.nodes.extend(ids)
     
-    def load_nodes_fromlist(self, vec: list):
+    def set_nodes_fromlist(self, vec: list):
         self.nodes = vec
     
     def get_neighbors(self, id):
