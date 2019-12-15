@@ -1,0 +1,23 @@
+from bearlibterminal import terminal
+from mapgen.dig import Digger
+
+class GameWindow:
+    def __init__(self):
+        mapwidth = 70
+        mapheight = 30
+
+        a = Digger(mapwidth, mapheight, letters = False, floortype = 'default')
+        a.dig_floor(75)
+
+        terminal.open()
+        terminal.set(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
+        terminal.printf(0, 0, str(a))
+        terminal.printf(mapwidth+1, 15, 'Side pane here!')
+        terminal.refresh()
+
+        print(a.roomgraph)
+        
+        while terminal.read() != terminal.TK_CLOSE:
+            pass
+        
+        terminal.close()
