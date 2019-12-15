@@ -176,8 +176,7 @@ class Digger:
                     else:
                         _newwalls = _address
                     
-                _newwalls = np.pad(_newwalls, (0,1), 
-                                constant_values = self.roomcount)
+                _newwalls = np.c_[_newwalls, [self.roomcount]*_newwalls.shape[0]]
 
                 self.connections = np.vstack((self.connections, 
                                               np.unique(_newwalls, axis = 0)))
