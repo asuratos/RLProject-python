@@ -9,6 +9,7 @@ class GameWindow:
 
         self.set_digger(mapwidth, mapheight, 'default', False)
         
+        self.blt.color(
         self.set_title(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
         
         # right now, prints are done with coords relative to the whole window.
@@ -17,7 +18,8 @@ class GameWindow:
         
         self.show_map()
         
-        # show side pane
+        # show side pane        
+        self.blt.color(self.blt.color_from_name('white'))
         self.blt.printf(mapwidth+1, 15, 'Side pane here!')
         
         # Initial refresh
