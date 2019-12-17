@@ -1,19 +1,28 @@
+from beralibterminal import terminal as blt
+
 from graphics.window import GameWindow
 
 def main():
 
     # initialize stuff
-    a = GameWindow()
+    blt.open()
+    
+    # Initialize game window
+    win = GameWindow(blt)
 
     # main game loop is here
     while True:
+        # animations,loops etc
         
-        if a.blt.has_input():
-            key = a.blt.read()
+        
+        # process input here
+        # inputhandler = InputHandler() or something
+        # inputhandler.read, etc
+        if blt.has_input():
+            key = blt.read()
             
-            # process input here
-            if key == a.blt.TK_CLOSE or a.blt.TK_ESC:
-                a.blt.close()
+            if key == blt.TK_CLOSE or .blt.TK_ESCAPE:
+                blt.close()
                 break
                 
 if __name__ == '__main__':
