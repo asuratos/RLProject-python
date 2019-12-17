@@ -43,4 +43,26 @@ class GameWindow:
         self.floor.dig_floor(room_attempts)
         
     def show_map(self):
-        self.blt.printf(0, 0, str(self.floor))
+        _rooms = self.floor.roomcount
+
+        self.blt.bkcolor(self.blt.color_from_name('brown')) #doorbg
+        self.blt.color(self.blt.color_from_name('black'))   #doorfg
+        # put doors
+        for pt in self.floor.doors:
+            self.blt.put(pt[0], pt[1], '+')
+        
+        for x in range(self.floor.width):
+            for y in range(self.floor.height):
+                # get element
+                _tile = self.floor[x,y]
+                if tile != 0:
+                    _color = 55 + ((_tile/_rooms)*200)
+                else:
+                    _color = 0
+                    
+                self.blt.bkcolor(self.blt.color_from_argb(f'{_color},{_color},{_color}'))
+                self.blt.put(x,y,' ')
+                pass
+        
+        # naive print
+        # self.blt.printf(0, 0, str(self.floor))
