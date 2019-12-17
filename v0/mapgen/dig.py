@@ -73,6 +73,11 @@ class Digger:
         # self.tiles = self.initialize_tiles()
         self.lettersflag = letters # this flag shouldn't be in this class
 
+        self.reset()
+
+        self.roomgen = RoomPicker(width, height, floortype)
+
+    def reset(self):        
         self.floorgraph = GridGraph()
         self.floor = np.zeros((self.width, self.height), dtype = int)
         self.doors = None
@@ -83,9 +88,8 @@ class Digger:
 
         self.roomgraph = Graph()
         self.roomcount = 1
-
-        self.roomgen = RoomPicker(width, height, floortype)
-
+        
+        
     def __str__(self):
         strlist = [''] * self.height
         for x in range(self.width):
