@@ -9,7 +9,6 @@ class GameWindow:
 
         self.set_digger(mapwidth, mapheight, 'default', False)
         
-        self.blt.color(
         self.set_title(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
         
         # right now, prints are done with coords relative to the whole window.
@@ -20,7 +19,16 @@ class GameWindow:
         
         # show side pane        
         self.blt.color(self.blt.color_from_name('white'))
-        self.blt.printf(mapwidth+1, 15, 'Side pane here!')
+        self.blt.bkcolor(self.blt.color_from_name('black'))
+        self.blt.printf(mapwidth+1, 3, 'Placeholder:')
+
+        # self.blt.bkcolor(self.blt.color_from_name('red'))
+        self.blt.printf(mapwidth+1, 4, 'HP:[bkcolor=red]          ')
+        self.blt.printf(mapwidth+1, 5, 'SP:[bkcolor=blue]          ')
+        
+        
+        self.blt.printf(mapwidth+1, 7, 'Ikjashdr')
+        self.blt.printf(mapwidth+1, 8, 'adkjvnut')
         
         # Initial refresh
         self.blt.refresh()
@@ -46,25 +54,25 @@ class GameWindow:
         
     def show_map(self):
         _rooms = self.floor.roomcount
-
-        self.blt.bkcolor(self.blt.color_from_name('brown')) #doorbg
-        self.blt.color(self.blt.color_from_name('black'))   #doorfg
-        # put doors
-        for pt in self.floor.doors:
-            self.blt.put(pt[0], pt[1], '+')
         
         for x in range(self.floor.width):
             for y in range(self.floor.height):
                 # get element
-                _tile = self.floor[x,y]
-                if tile != 0:
-                    _color = 55 + ((_tile/_rooms)*200)
+                _tile = self.floor.floor[x,y]
+                if _tile != 0:
+                    _color = int((_tile/_rooms)*255)
+                    self.blt.bkcolor(self.blt.color_from_argb(255,_color,0,255-_color))
                 else:
                     _color = 0
+                    self.blt.bkcolor(self.blt.color_from_name('black'))
                     
-                self.blt.bkcolor(self.blt.color_from_argb(f'{_color},{_color},{_color}'))
-                self.blt.put(x,y,' ')
+                self.blt.print(x,y,' ')
                 pass
         
+        # put doors
+        self.blt.bkcolor(self.blt.color_from_name('orange')) #doorbg
+        self.blt.color(self.blt.color_from_name('black'))   #doorfg
+        for pt in self.floor.doors:
+            self.blt.print(pt[0], pt[1], '+')
         # naive print
         # self.blt.printf(0, 0, str(self.floor))

@@ -229,8 +229,6 @@ class Digger:
             if np.count_nonzero(self.floor) / (self.height*self.width) > 0.75:
                 break
 
-        print('finish')
-
 if __name__ == '__main__':
     a = Digger(50,30)
     a.dig_floor(10)
