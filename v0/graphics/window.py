@@ -15,7 +15,9 @@ class GameWindow:
         # should be changed to a set of panels, and prints are assigned relative to 
         # each panel's position (panel1(0,0) is different from panel2(0,0), etc.)
         
-        self.blt.printf(0, 0, str(self.floor))
+        self.show_map()
+        
+        # show side pane
         self.blt.printf(mapwidth+1, 15, 'Side pane here!')
         
         # Initial refresh
@@ -39,3 +41,6 @@ class GameWindow:
     def reset_digger(self, room_attempts = 75):
         self.floor.reset()
         self.floor.dig_floor(room_attempts)
+        
+    def show_map(self):
+        self.blt.printf(0, 0, str(self.floor))
