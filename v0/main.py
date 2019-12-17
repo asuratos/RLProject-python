@@ -24,6 +24,11 @@ def main():
             if key == blt.TK_CLOSE or .blt.TK_ESCAPE:
                 blt.close()
                 break
+            elif key == blt.TK_R:
+                # rerun mapgen
+                win.reset_digger()
+                win.show_map()
+                win.update()
                 
 if __name__ == '__main__':
     main()
