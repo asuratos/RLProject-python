@@ -142,6 +142,29 @@ class Digger:
         
         self.floorgraph.add_node(pt.tolist())
 
+    def dig_extradoors(self):
+        # get list of possible points
+        _u, _c = np.unique(self.connections[...:-1], axis = 0, return_counts = True)
+        
+        # get list of points with exactly 2 connecting rooms
+        _locs = _u[_c == 2]
+        np.random.shuffle(_locs)
+        
+        # iterate over list
+        for _pt in _locs:
+            # get list of rooms attached to point
+            
+            # if rooms are >2 rooms apart, 
+            if True:
+                # poke hole
+                self.place_door(_pt)
+                
+                # add connection to roomgraph
+                self.roomgraph.add_edge(r1,r2)
+                
+            pass
+        pass
+    
     def attach_room(self, room, attach_pts):
 
         for pt in attach_pts:
@@ -225,6 +248,9 @@ class Digger:
             if np.count_nonzero(self.floor) / (self.height*self.width) > 0.75:
                 break
 
+        # poke new doors here
+        self.dig_extradoors()
+                
         print('finish')
 
 if __name__ == '__main__':
