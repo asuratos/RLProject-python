@@ -157,7 +157,7 @@ class Digger:
             _r1,_r2 = self.connections[(self.connections[...,:-1] == _pt).all(1)][...,-1]
             
             # if rooms are >2 rooms apart,            
-            if self.roomgraph.dist(_r1, _r2) > 2:
+            if self.roomgraph.get_dist(_r1, _r2) > 2:
                 # poke hole
                 self.place_door(_pt)
                 

@@ -1,3 +1,5 @@
+from graphs.pathfinding import bfs_dist
+
 class Graph:
     '''
     General graph class for pathfinding, etc
@@ -27,6 +29,10 @@ class Graph:
         if id in self.edges.keys():
             return self.edges[id]
         return None
+    
+    def get_dist(self, id1, id2):
+        dists = bfs_dist(self, id1, id2)
+        return dists[id2]
 
 class GridGraph:
     '''

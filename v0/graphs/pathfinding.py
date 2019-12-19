@@ -14,12 +14,15 @@ class Queue:
     def get(self):
         return self.elements.popleft()
 
-def floodfill(graph, start):
+def bfs_dist(graph, start, goal = None):
     '''
     From a graph and a point in the graph, 
     finds the locations on the graph that are accessible from 
     the starting point, and gives the distance in steps from the
-    start
+    start.
+    
+    If a goal is provided, then it will exit as soon as the goal becomes the 
+    current node.
     '''
     
     frontier = Queue()
@@ -30,6 +33,10 @@ def floodfill(graph, start):
     
     while not frontier.empty:
         current = frontier.get()
+        
+        if current == goal:
+            break
+        
         for next in graph.get_neighbors(current):
             if next not in distance:
                 frontier.put(next)
