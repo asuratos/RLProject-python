@@ -4,7 +4,6 @@ import numpy as np
 from mapgen.rooms import Room, RoomRect, RoomCross, RoomCircle
 from mapgen.ca.ca import CAMap, Cave
 from graphs.graph import Graph, GridGraph
-from graphs.pathfinding import Graph, GridGraph
 
 class RoomWrapper:
     '''
