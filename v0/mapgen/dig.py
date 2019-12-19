@@ -4,6 +4,7 @@ import numpy as np
 from mapgen.rooms import Room, RoomRect, RoomCross, RoomCircle
 from mapgen.ca.ca import CAMap, Cave
 from graphs.graph import Graph, GridGraph
+from graphs.pathfinding import Graph, GridGraph
 
 class RoomWrapper:
     '''
@@ -144,7 +145,7 @@ class Digger:
 
     def dig_extradoors(self):
         # get list of possible points
-        _u, _c = np.unique(self.connections[...:-1], axis = 0, return_counts = True)
+        _u, _c = np.unique(self.connections[...,:-1], axis = 0, return_counts = True)
         
         # get list of points with exactly 2 connecting rooms
         _locs = _u[_c == 2]
@@ -153,14 +154,15 @@ class Digger:
         # iterate over list
         for _pt in _locs:
             # get list of rooms attached to point
+            _r1,_r2 = self.connections[(self.connections[...,:-1] == _pt).all(1)][...,-1]
             
-            # if rooms are >2 rooms apart, 
-            if True:
+            # if rooms are >2 rooms apart,            
+            if self.roomgraph.dist(_r1, _r2) > 2:
                 # poke hole
                 self.place_door(_pt)
                 
                 # add connection to roomgraph
-                self.roomgraph.add_edge(r1,r2)
+                self.roomgraph.add_edge(_r1,_r2)
                 
             pass
         pass
