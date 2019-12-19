@@ -145,7 +145,7 @@ class RoomCross(Room):
             'template' : ('min','max'),
             'small' : (3,5),
             'medium' : (4,6),
-            'large' : (6,9)
+            'large' : (5,7)
         }
         
         if size not in _dims:

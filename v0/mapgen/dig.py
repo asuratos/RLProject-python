@@ -228,7 +228,7 @@ class Digger:
             self.walls[_address[:,0], _address[:,1]] = key
 
         _walls = np.argwhere(self.walls != 'no')
-        self.connections = np.pad(_walls, (0,1), constant_values = 1)
+        self.connections = np.c_[_walls, [self.roomcount]*_walls.shape[0]]
 
         self.roomgraph.add_node(self.roomcount)
 
