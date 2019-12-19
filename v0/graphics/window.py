@@ -60,8 +60,8 @@ class GameWindow:
                 # get element
                 _tile = self.floor.floor[x,y]
                 if _tile != 0:
-                    _color = int((_tile/_rooms)*255)
-                    self.blt.bkcolor(self.blt.color_from_argb(255,_color,0,255-_color))
+                    _color = 100 + int((_tile/_rooms)*155)
+                    self.blt.bkcolor(self.blt.color_from_argb(255,255,255-_color,255-_color))
                 else:
                     _color = 0
                     self.blt.bkcolor(self.blt.color_from_name('black'))

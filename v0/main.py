@@ -10,10 +10,15 @@ def main():
     
     # Initialize game window
     win = GameWindow(blt)
+    
+    # Initialize input methods
+    blt.set("input.filter={keyboard, mouse+}")
 
     # main game loop is here
     while True:
         # animations,loops etc
+        mx = blt.state(blt.TK_MOUSE_X)
+        my = blt.state(blt.TK_MOUSE_Y)
         
         # process input here
         # inputhandler = InputHandler() or something
@@ -27,8 +32,13 @@ def main():
             elif key == blt.TK_R:
                 # rerun mapgen
                 win.reset_digger()
-                win.show_map()
-                win.update()
-                
+
+        win.show_map()
+
+        blt.color(blt.color_from_name('blue'))
+        blt.put(mx, my, 0x2588)
+
+        win.update()
+        
 if __name__ == '__main__':
     main()
