@@ -224,7 +224,7 @@ class Digger:
 
         # stamp onto temporary list of spots to dig out
         self.floor[initroom.shifted(shift)] = self.roomcount
-        self.floorgraph.set_nodes_fromlist = np.argwhere(self.floor != 1).tolist()
+        self.floorgraph.set_nodes_fromlist(np.argwhere(self.floor == 1).tolist())
         
         for key in initroom.boundary:
             _address = initroom.boundary[key] + shift

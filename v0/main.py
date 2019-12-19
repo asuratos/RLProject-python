@@ -32,11 +32,11 @@ def main():
             elif key == blt.TK_R:
                 # rerun mapgen
                 win.reset_digger()
+            # elif key == blt.TK_MOUSE_LEFT:
+        win.show_map_dists(mx,my)
 
-        win.show_map()
-
-        blt.color(blt.color_from_name('blue'))
-        blt.put(mx, my, 0x2588)
+        # blt.color(blt.color_from_name('blue'))
+        # blt.put(mx, my, 0x2588)
 
         win.update()
         

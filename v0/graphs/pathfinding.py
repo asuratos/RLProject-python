@@ -34,7 +34,7 @@ def bfs_dist(graph, start, goal = None):
     while not frontier.empty:
         current = frontier.get()
         
-        if current == goal:
+        if goal and current == goal:
             break
         
         for next in graph.get_neighbors(current):

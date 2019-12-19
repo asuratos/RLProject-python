@@ -76,3 +76,32 @@ class GameWindow:
             self.blt.print(pt[0], pt[1], '+')
         # naive print
         # self.blt.printf(0, 0, str(self.floor))
+
+    def show_map_dists(self, mx, my):
+        _rooms = self.floor.roomcount
+        _dists = self.floor.floorgraph.get_dists((mx,my))
+        
+        for x in range(self.floor.width):
+            for y in range(self.floor.height):
+                # get element
+                _tile = self.floor.floor[x,y]
+                
+                if (x, y) in _dists:
+                    _dist = _dists[(x,y)] * 7 
+                    if _dist > 255:
+                        _dist = 255
+                    self.blt.bkcolor(self.blt.color_from_argb(255,255-_dist,255-_dist,255-_dist))
+                else:
+                    _color = 0
+                    self.blt.bkcolor(self.blt.color_from_name('black'))
+                    
+                self.blt.print(x,y,' ')
+                pass
+        
+        # put doors
+        self.blt.bkcolor(self.blt.color_from_name('orange')) #doorbg
+        self.blt.color(self.blt.color_from_name('black'))   #doorfg
+        for pt in self.floor.doors:
+            self.blt.print(pt[0], pt[1], '+')
+        # naive print
+        # self.blt.printf(0, 0, str(self.floor))

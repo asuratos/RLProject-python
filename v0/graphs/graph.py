@@ -46,6 +46,9 @@ class GridGraph:
     def __init__(self):
         self.nodes = []
         
+    def __contains__(self, id):
+        return list(id) in self.nodes
+        
     def add_node(self, id: list):
         self.nodes.append(id)
 
@@ -61,4 +64,8 @@ class GridGraph:
                      [x - 1, y],
                      [x, y + 1],
                      [x, y - 1]]
-        return [tuple(pt) for pt in neighbors if pt not in self.nodes]
+        return [tuple(pt) for pt in neighbors if pt in self.nodes]
+
+    def get_dists(self, pt):
+        _dists = bfs_dist(self, pt)
+        return _dists
