@@ -15,11 +15,16 @@ def main():
     blt.set("input.filter={keyboard, mouse+}")
 
     _dest = None
+    mx, my = 0, 0
     # main game loop is here
     while True:
         # animations,loops etc
-        mx = blt.state(blt.TK_MOUSE_X)
-        my = blt.state(blt.TK_MOUSE_Y)
+        _mx = blt.state(blt.TK_MOUSE_X)
+        _my = blt.state(blt.TK_MOUSE_Y)
+        
+        # out of bounds check here
+        if win.check_mouse_onfloor(_mx, _my):
+            mx, my = _mx, _my 
         
         # process input here
         # inputhandler = InputHandler() or something

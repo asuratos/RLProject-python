@@ -95,8 +95,9 @@ def bfs_greedy(graph, start, goal, h = manhattandist):
         
         for next in graph.get_neighbors(current):
             _dist = h(next, goal)
-            if (next not in comes_from):
+            if (next not in comes_from) and (dist_so_far.get(next, 100) > dist_so_far[current] + 1):
                 frontier.put(next, h(next, goal))
                 comes_from[next] = current
+                dist_so_far[next] = 1 + dist_so_far[current]
                 
     return comes_from

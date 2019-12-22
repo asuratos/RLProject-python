@@ -35,6 +35,9 @@ class GameWindow:
 
         # print(a.roomgraph)
     
+    def check_mouse_onfloor(self, x, y):
+        return (x,y) in self.floor.floorgraph
+    
     def update(self):
         # update each panel (subwindow) contents
         
@@ -111,6 +114,8 @@ class GameWindow:
 
         path = self.floor.floorgraph.get_path(pt1, pt2)
 
+        self.blt.bkcolor(self.blt.color_from_argb(0,0,0,0))
+        self.blt.color(self.blt.color_from_name('blue'))
         self.blt.print(*pt1, '*')
         current = pt2
         while current != pt1:
