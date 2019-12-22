@@ -14,6 +14,7 @@ def main():
     # Initialize input methods
     blt.set("input.filter={keyboard, mouse+}")
 
+    _dest = None
     # main game loop is here
     while True:
         # animations,loops etc
@@ -32,8 +33,14 @@ def main():
             elif key == blt.TK_R:
                 # rerun mapgen
                 win.reset_digger()
-            # elif key == blt.TK_MOUSE_LEFT:
+            elif key == blt.TK_MOUSE_LEFT:
+                _dest = (mx, my)
+            elif key == blt.TK_MOUSE_RIGHT:
+                _dest = None
+
         win.show_map_dists(mx,my)
+        if _dest:
+            win.draw_path(_dest, (mx,my))
 
         # blt.color(blt.color_from_name('blue'))
         # blt.put(mx, my, 0x2588)

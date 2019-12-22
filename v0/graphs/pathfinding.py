@@ -66,3 +66,37 @@ def bfs_dist(graph, start, goal = None):
                 distance[next] = 1 + distance[current]
                 
     return distance
+
+def bfs_greedy(graph, start, goal, h = manhattandist):
+    '''
+    From a graph and a point in the graph, 
+    finds the locations on the graph that are accessible from 
+    the starting point, and gives the distance in steps from the
+    start.
+    
+    If a goal is provided, then it will exit as soon as the goal becomes the 
+    current node.
+    '''
+    
+    frontier = PriorityQueue()
+    frontier.put(start,0)
+    
+    comes_from = {}
+    comes_from[start] = 0
+        
+    dist_so_far = {}
+    dist_so_far[start] = 0
+
+    while not frontier.empty:
+        current = frontier.get()
+        
+        if current == goal:
+            break
+        
+        for next in graph.get_neighbors(current):
+            _dist = h(next, goal)
+            if (next not in comes_from):
+                frontier.put(next, h(next, goal))
+                comes_from[next] = current
+                
+    return comes_from

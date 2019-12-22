@@ -105,3 +105,16 @@ class GameWindow:
             self.blt.print(pt[0], pt[1], '+')
         # naive print
         # self.blt.printf(0, 0, str(self.floor))
+    
+    def draw_path(self, pt1, pt2):
+        self.blt.composition(self.blt.TK_ON)
+
+        path = self.floor.floorgraph.get_path(pt1, pt2)
+
+        self.blt.print(*pt1, '*')
+        current = pt2
+        while current != pt1:
+            self.blt.print(*current, '*')
+            current = path[current]
+
+        self.blt.composition(self.blt.TK_OFF)

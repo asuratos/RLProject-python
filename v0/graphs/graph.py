@@ -1,4 +1,4 @@
-from graphs.pathfinding import bfs_dist
+from graphs.pathfinding import bfs_dist, bfs_greedy
 
 class Graph:
     '''
@@ -69,3 +69,7 @@ class GridGraph:
     def get_dists(self, pt):
         _dists = bfs_dist(self, pt)
         return _dists
+
+    def get_path(self, pt1, pt2):
+        _path = bfs_greedy(self, pt1, pt2)
+        return _path
