@@ -1,5 +1,7 @@
 from collections import deque
 
+from graphs.heuristics import manhattandist
+
 class Queue:
     def __init__(self):
         self.elements = deque()
@@ -13,6 +15,27 @@ class Queue:
     
     def get(self):
         return self.elements.popleft()
+
+class PriorityQueue:
+    def __init__(self):
+        self.elements = []
+          
+    @property
+    def empty(self):
+        return len(self.elements) == 0
+    
+    def put(self, x, prio):
+        self.elements.append((x, prio))
+    
+    def get(self):
+        #should return the element with the lowest priority
+        best = (None, 300)
+        for element in self.elements:
+            if element[-1] < best[-1]:
+                best = element 
+
+        self.elements.remove(best)
+        return best[0]
 
 def bfs_dist(graph, start, goal = None):
     '''

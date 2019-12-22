@@ -88,8 +88,8 @@ class GameWindow:
                 
                 if (x, y) in _dists:
                     _dist = _dists[(x,y)] * 7 
-                    if _dist > 255:
-                        _dist = 255
+                    if _dist > 200:
+                        _dist = 200
                     self.blt.bkcolor(self.blt.color_from_argb(255,255-_dist,255-_dist,255-_dist))
                 else:
                     _color = 0
