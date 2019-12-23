@@ -1,6 +1,6 @@
 import numpy as np
 
-from mapgen.ca.carules import ruleCave
+from map.mapgen.ca.carules import ruleCave
 
 def _manhattandistance(pt, vectors):
     '''

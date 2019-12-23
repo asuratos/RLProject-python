@@ -1,4 +1,4 @@
-from mapgen.dig import Digger
+from map.mapgen.dig import Digger
 
 class GameWindow:
     def __init__(self, blt):

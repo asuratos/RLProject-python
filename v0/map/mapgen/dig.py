@@ -1,8 +1,8 @@
 import numpy as np
 
 # from map_objects.tile import Tile
-from mapgen.rooms import Room, RoomRect, RoomCross, RoomCircle
-from mapgen.ca.ca import CAMap, Cave
+from map.mapgen.rooms import Room, RoomRect, RoomCross, RoomCircle
+from map.mapgen.ca.ca import CAMap, Cave
 from graphs.graph import Graph, GridGraph
 
 class RoomWrapper:
