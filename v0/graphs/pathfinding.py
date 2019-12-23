@@ -67,7 +67,7 @@ def bfs_dist(graph, start, goal = None):
                 
     return distance
 
-def bfs_greedy(graph, start, goal, h = manhattandist):
+def astar(graph, start, goal, h = manhattandist):
     '''
     From a graph and a point in the graph, 
     finds the locations on the graph that are accessible from 
@@ -94,10 +94,10 @@ def bfs_greedy(graph, start, goal, h = manhattandist):
             break
         
         for next in graph.get_neighbors(current):
-            _dist = h(next, goal)
-            if (next not in comes_from) and (dist_so_far.get(next, 100) > dist_so_far[current] + 1):
-                frontier.put(next, h(next, goal))
+            _currentdist = dist_so_far[current] + 1
+            if (next not in comes_from) and (dist_so_far.get(next, 100) > _currentdist):
+                frontier.put(next, _currentdist + h(next, goal))
                 comes_from[next] = current
-                dist_so_far[next] = 1 + dist_so_far[current]
-                
-    return comes_from
+                dist_so_far[next] = _currentdist
+                                
+    return comes_from, dist_so_far
