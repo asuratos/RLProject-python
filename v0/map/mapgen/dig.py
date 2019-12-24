@@ -67,15 +67,18 @@ class RoomPicker:
 
 
 class Digger:
-    def __init__(self, width, height, letters = False, floortype = 'default'):
+    def __init__(self, width, height, floortype = 'default'):
         self.width = width
         self.height = height
         # self.tiles = self.initialize_tiles()
-        self.lettersflag = letters # this flag shouldn't be in this class
 
         self.reset()
 
-        self.roomgen = RoomPicker(width, height, floortype)
+        self.set_floortype(floortype)
+        self.roomgen = RoomPicker(width, height, self.floortype)
+
+    def set_floortype(self, floortype):
+        self.floortype = floortype
 
     def reset(self):        
         self.floorgraph = GridGraph()
@@ -89,34 +92,6 @@ class Digger:
         self.roomgraph = Graph()
         self.roomcount = 1
         
-        
-    def __str__(self):
-        strlist = [''] * self.height
-        for x in range(self.width):
-            for y in range(self.height):
-                pt = [x,y]
-                if (self.doors == pt).all(1).any():
-                    strlist[y] += '+'
-                elif self.floor[x, y] > 0:
-                    if self.lettersflag:
-                        strlist[y] += f'{chr(ord("a") - 1 + self.floor[x,y])}'
-                    else:
-                        strlist[y] += '.'
-                else:
-                    if self.lettersflag:
-                        strlist[y] += '.'
-                    else:
-                        strlist[y] += '#'
-
-
-        return '\n'.join(strlist)
-
-    # def initialize_tiles(self):
-    #     tiles = [[Tile(True) for y in range(self.height)] for x in range(self.width)]
-
-    #     return tiles
-    
-
     def clear_check(self, space1, space2):
         # check boundaries
         if (space1[:,0] >= self.width-1).any() or \
@@ -214,7 +189,7 @@ class Digger:
         return False
 
     #generate map
-    def dig_floor(self, maxrooms):
+    def dig_floor(self, maxrooms = 75):
 
         # make initial room
         initroom = RoomWrapper(RoomRect(size = 'medium', hallwaychance = 0))
@@ -241,7 +216,6 @@ class Digger:
             
             newroom.transform()
             
-            # np.random.shuffle(self.walls)
             # find place for newroom
             for _ in range(2):
                 if self.attach_room(newroom, np.argwhere(self.walls == newroom.facing)):
@@ -253,7 +227,7 @@ class Digger:
             if np.count_nonzero(self.floor) / (self.height*self.width) > 0.75:
                 break
 
-        # poke new doors here
+        # poke new doors
         self.dig_extradoors()
 
 if __name__ == '__main__':

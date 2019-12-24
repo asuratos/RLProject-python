@@ -7,7 +7,7 @@ class GameWindow:
         mapwidth = 70
         mapheight = 30
 
-        self.set_digger(mapwidth, mapheight, 'default', False)
+        self.set_digger(mapwidth, mapheight, 'default')
         
         self.set_title(f'window: size={mapwidth + 20}x{mapheight}, title=RLTest;')
         
@@ -47,8 +47,8 @@ class GameWindow:
     def set_title(self, fstr):
         self.blt.set(fstr)
     
-    def set_digger(self, mapwidth, mapheight, floortype = 'default', letters = False, room_attempts = 75):
-        self.floor = Digger(mapwidth, mapheight, letters, floortype)
+    def set_digger(self, mapwidth, mapheight, floortype = 'default', room_attempts = 75):
+        self.floor = Digger(mapwidth, mapheight, floortype)
         self.floor.dig_floor(room_attempts)
         
     def reset_digger(self, room_attempts = 75):
