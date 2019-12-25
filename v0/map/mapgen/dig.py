@@ -28,6 +28,7 @@ class RoomPicker:
     '''
 
     def __init__(self, w, h, profile = 'default'):
+        # This should be a Json read
         self.floortypes = {
             'default': {
                 'rooms' : [RoomRect, RoomCross, RoomCircle],
@@ -141,9 +142,6 @@ class Digger:
                 
                 # add connection to roomgraph
                 self.roomgraph.add_edge(_r1,_r2)
-                
-            pass
-        pass
     
     def attach_room(self, room, attach_pts):
 

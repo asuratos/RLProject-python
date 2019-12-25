@@ -4,17 +4,46 @@ from dataclasses import dataclass
 class Tile:
     is_walkable : bool = False
     is_open : bool = False
+    is_seen : bool = False
     blocks_vision : bool = False
     kind : str = 'wall'
 
-    def set_walkable(self, walk):
-        self.is_walkable = walk
+    def __init__(self, data):
+        for key in data:
+            setattr(self, key, data[key])
 
-    def set_open(self, opened):
-        self.is_open = opened
+class TileFactory:
+    def __init__(self):
+        self.tiletypes = {
+            'template': {
+                'is_walkable' : True,
+                'is_open' : False,
+                'is_seen' : False,
+                'blocks_vision' : False,
+                'kind' : 'wall'
+            },
+            'wall' : {
+                'is_walkable' : False,
+                'is_open' : False,
+                'is_seen' : False,
+                'blocks_vision' : True,
+                'kind' : 'wall'
+            },
+            'floor' : {
+                'is_walkable' : True,
+                'is_open' : True,
+                'is_seen' : False,
+                'blocks_vision' : False,
+                'kind' : 'floor'
+            },
+            'door_closed' : {
+                'is_walkable' : True,
+                'is_open' : True,
+                'is_seen' : False,
+                'blocks_vision' : True,
+                'kind' : 'door_closed'
+            }
+        }
 
-    def set_opacity(self, blocks_v):
-        self.blocks_vision = blocks_v
-
-    def set_kind(self, kind):
-        self.kind = kind
+    def generate_tile(self, type):
+        return Tile(self.tiletypes[type])
