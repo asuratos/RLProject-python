@@ -5,12 +5,16 @@ class Tile:
     is_walkable : bool = False
     is_open : bool = False
     is_seen : bool = False
+    visible : bool = False
     blocks_vision : bool = False
     kind : str = 'wall'
 
     def __init__(self, data):
         for key in data:
             setattr(self, key, data[key])
+    
+    def __repr__(self):
+        return self.kind
 
 class TileFactory:
     def __init__(self):
@@ -19,6 +23,7 @@ class TileFactory:
                 'is_walkable' : True,
                 'is_open' : False,
                 'is_seen' : False,
+                'visible' : False,
                 'blocks_vision' : False,
                 'kind' : 'wall'
             },
@@ -26,6 +31,7 @@ class TileFactory:
                 'is_walkable' : False,
                 'is_open' : False,
                 'is_seen' : False,
+                'visible' : False,
                 'blocks_vision' : True,
                 'kind' : 'wall'
             },
@@ -33,6 +39,7 @@ class TileFactory:
                 'is_walkable' : True,
                 'is_open' : True,
                 'is_seen' : False,
+                'visible' : False,
                 'blocks_vision' : False,
                 'kind' : 'floor'
             },
@@ -40,6 +47,7 @@ class TileFactory:
                 'is_walkable' : True,
                 'is_open' : True,
                 'is_seen' : False,
+                'visible' : False,
                 'blocks_vision' : True,
                 'kind' : 'door_closed'
             }
